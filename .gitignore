@@ -1,2 +1,5 @@
 build/
 .venv/
+CMakeUserPresets.json
+init*
+conanfile.txt.bak
