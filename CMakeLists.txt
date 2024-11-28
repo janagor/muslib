@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(SndFile REQUIRED)
+find_package(FFTW3 REQUIRED)
 
 include_directories(src)
 add_subdirectory(src)
