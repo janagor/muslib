@@ -1,11 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <array>
-#include <memory>
-#include <cstring>
-#include <sndfile.hh>
 #include "io.hpp"
-namespace musio {
+
+namespace muslib::io {
+
 std::vector<double> load(const std::string& file_name) {
     const size_t BUFFER_LEN = 4096;
     SNDFILE *infile;

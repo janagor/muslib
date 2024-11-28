@@ -1,5 +1,7 @@
-#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/numpy.h>
+
 #include "io.hpp"
 
 namespace py = pybind11;
@@ -17,12 +19,12 @@ void ensure_numpy() {
     }
 }
 
-PYBIND11_MODULE(musio, m) {
+PYBIND11_MODULE(m_io, m) {
     ensure_numpy();
-    m.doc() = "Python bindings for the musio library";
+    m.doc() = "File operations";
 
     m.def("load", [](const char* filename) -> py::array_t<double> {
-        std::vector<double> data = musio::load(filename);
+        std::vector<double> data = muslib::io::load(filename);
 
         py::array_t<double> numpy_array(data.size(), data.data());
 
