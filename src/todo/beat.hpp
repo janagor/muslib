@@ -1,9 +1,11 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include <algorithm>
 
 namespace muslib:beat {
-    using real_signal = std::vector<double>;
+    using Signal = std::vector<double>;
     using time = int;
     using tempo = std::dobule;
 
