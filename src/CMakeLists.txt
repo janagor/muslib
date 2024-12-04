@@ -1,12 +1,8 @@
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=4")
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
-
 add_library(cpp_module STATIC cpp_module.cpp)
 
 add_library(io STATIC io.cpp)
 add_library(transform STATIC transform.cpp)
+add_library(mixer STATIC mixer.cpp)
 
 target_link_libraries(io PUBLIC SndFile::sndfile)
 target_link_libraries(transform PUBLIC FFTW3::fftw3)
