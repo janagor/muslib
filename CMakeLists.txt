@@ -10,10 +10,8 @@ set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 set(CMAKE_CXX_CPPCHECK "cppcheck")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(COMPILER_FLAGS "-Werror -Wextra -Wall -pedantic")
-
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMPILER_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wextra -Wall -pedantic -fsanitize=undefined")
 elseif (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX")
 endif()
