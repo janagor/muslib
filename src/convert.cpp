@@ -1,9 +1,9 @@
-#include <convert.hpp>
+#include "convert.hpp"
 #include <string>
 #include <sndfile.h>
 
-namespace muslib:convert {
-    void convert_to_format(onst std::string& input_file, const std::string& output_file, const std::string& format){
+namespace muslib::convert {
+    int convert_to_format(const std::string& input_file, const std::string& output_file, const std::string& format){
         SF_INFO sfinfo_in, sfinfo_out;
         SNDFILE *infile, *outfile;
 
@@ -13,7 +13,7 @@ namespace muslib:convert {
         }
 
         sfinfo_out = sfinfo_in;
-        sfinfo_out.format = SF_FORMAR_WAV | SF_FORMAR_PCM_16
+        sfinfo_out.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
         if(!(outfile = sf_open(input_file.c_str(), SFM_WRITE, &sfinfo_out))){
             std::cerr << "Conversion error, cannot open output file :" << output_file << std::endl;
@@ -26,9 +26,10 @@ namespace muslib:convert {
             sf_writef_short(outfile, buffer, sfinfo_out.frames);
         }
 
-        sfclose(infile);
-        sfclose(outfile);
+        sf_close(infile);
+        sf_close(outfile);
 
         delete[] buffer;
+        return 0;
     }
 }
