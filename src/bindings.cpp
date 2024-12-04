@@ -4,6 +4,5 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(python_bindings, m) {
-    m.def("add", &add, "A function that adds two numbers");
+  m.def("add", &add, "A function that adds two numbers");
 }
-
