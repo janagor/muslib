@@ -5,14 +5,15 @@
 namespace muslib::io {
 
 std::vector<double> load(const std::string &file_name) {
+  const int samplerate = 22050; // TODO: make it a variable param
   const size_t BUFFER_LEN = 4096;
   SNDFILE *infile;
   SF_INFO sfinfo;
-
   std::array<double, BUFFER_LEN> buffer;
   std::vector<double> result;
 
   memset(&sfinfo, 0, sizeof(sfinfo));
+  sfinfo.samplerate = samplerate;
 
   if (!(infile = sf_open(file_name.c_str(), SFM_READ, &sfinfo))) {
     std::cout << "Error : could not open file : " << file_name << std::endl;
