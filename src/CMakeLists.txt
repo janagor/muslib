@@ -17,3 +17,6 @@ target_link_libraries(m_transform PUBLIC transform)
 
 add_executable(transform_exe transform_app.cpp)
 target_link_libraries(transform_exe PUBLIC transform)
+
+install(TARGETS python_bindings m_io m_transform
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/muslib_python_config)
