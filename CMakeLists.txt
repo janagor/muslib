@@ -8,6 +8,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
 set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 set(CMAKE_CXX_CPPCHECK "cppcheck")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(COMPILER_FLAGS "-Werror -Wextra -Wall -pedantic")
 
@@ -28,3 +29,5 @@ add_subdirectory(src)
 
 enable_testing()
 add_subdirectory(tests)
+
+
