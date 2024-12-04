@@ -15,8 +15,8 @@ setup(
     version='0.1.0',
     cmdclass={'build_ext': CMakeBuild},
     package_dir={'muslib': 'muslib_python_config'},
-    install_requires=['pybind11', 'numpy'],
+    install_requires=['setuptools', 'pybind11', 'numpy'],
     package_data={
-        'muslib_python_config': ['*'],
+        'muslib': ['muslib_python_config', '*.pyd', '.so'],
     },
 )
