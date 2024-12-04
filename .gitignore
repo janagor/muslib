@@ -6,3 +6,4 @@ conanfile.txt.bak
 compile_commands.json
 muslib_python_config/*.so
 .cache/
+muslib.egg-info/
