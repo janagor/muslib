@@ -1,5 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.build import can_run
 
 class MyProjectConan(ConanFile):
     name = "muslib"
@@ -16,4 +17,7 @@ class MyProjectConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+        if can_run(self):
+            cmake.test()
 
