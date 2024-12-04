@@ -28,7 +28,7 @@ complex_coefs stft(const real_signal& signal, int n_fft, int hop_length, const r
         real_signal windowed_signal(n_fft, 0.0);
 
         for (int i = 0; i < n_fft; ++i) {
-            if (start_idx + i < signal.size()) {
+            if (static_cast<size_t>(start_idx + i) < signal.size()) {
                 windowed_signal[i] = signal[start_idx + i] * window[i];
             }
         }
