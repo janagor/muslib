@@ -4,12 +4,12 @@
 
 namespace muslib::io {
 
-std::vector<double> load(const std::string &file_name) {
+Signal1 load(const std::string &file_name) {
   const size_t BUFFER_LEN = 4096;
   SNDFILE *infile;
   SF_INFO sfinfo;
   std::array<double, BUFFER_LEN> buffer;
-  std::vector<double> result;
+  Signal1 result;
   memset(&sfinfo, 0, sizeof(sfinfo));
 
   if (!(infile = sf_open(file_name.c_str(), SFM_READ, &sfinfo))) {
@@ -36,8 +36,8 @@ std::vector<double> load(const std::string &file_name) {
   return result;
 }
 
-std::vector<double> resample(const std::vector<double> &original,
-                             int from_srate, int to_srate, int num_channels) {
+Signal1 resample(const Signal1 &original, int from_srate, int to_srate,
+                 int num_channels) {
   if (from_srate == to_srate) {
     return original;
   }
@@ -45,7 +45,7 @@ std::vector<double> resample(const std::vector<double> &original,
   int from_nframes = static_cast<int>(original.size());
   int to_nframes = static_cast<int>(original.size() *
                                     static_cast<double>(to_srate) / from_srate);
-  std::vector<double> resampled_data(to_nframes * num_channels);
+  Signal1 resampled_data(to_nframes * num_channels);
 
   for (int ch = 0; ch < num_channels; ++ch) {
     for (int i = 0; i < to_nframes; ++i) {

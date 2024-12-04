@@ -26,9 +26,8 @@ PYBIND11_MODULE(m_transform, m) {
 
   m.def(
       "stft",
-      [](const muslib::transform::real_signal &signal, int n_fft,
-         int hop_length) {
-        muslib::transform::complex_coefs coefs =
+      [](const muslib::Signal1 &signal, int n_fft, int hop_length) {
+        muslib::Signal2Complex coefs =
             muslib::transform::stft(signal, n_fft, hop_length);
 
         size_t n_frames = coefs.size();

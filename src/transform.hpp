@@ -1,22 +1,15 @@
 #pragma once
+#include "common.hpp"
 #include <cmath>
-#include <complex>
 #include <fftw3.h>
-#include <vector>
 
 namespace muslib::transform {
 
-using complex_coefs = std::vector<std::vector<std::complex<double>>>;
-using real_coefs = std::vector<std::vector<double>>;
-using real_signal = std::vector<double>;
-using complex_signal = std::vector<std::complex<double>>;
+Signal1 hann_window(int size);
+Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length);
+Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
+                    const Signal1 &window);
 
-real_signal hann_window(int size);
-
-complex_coefs stft(const real_signal &signal, int n_fft, int hop_length);
-complex_coefs stft(const real_signal &signal, int n_fft, int hop_length,
-                   const real_signal &window);
-
-real_coefs compute_magnitude_spectrum(const complex_coefs &stft_result);
+Signal2 compute_magnitude_spectrum(const Signal2Complex &stft_result);
 
 } // namespace muslib::transform
