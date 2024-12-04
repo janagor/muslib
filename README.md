@@ -3,6 +3,8 @@
 * python
 * g++
 * cmake
+* clang-tidy
+* cppcheck
 
 # Build
 
