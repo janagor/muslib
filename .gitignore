@@ -3,3 +3,4 @@ build/
 CMakeUserPresets.json
 init*
 conanfile.txt.bak
+compile_commands.json
