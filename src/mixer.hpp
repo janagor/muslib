@@ -9,6 +9,14 @@ namespace muslib::mixer {
 // Signal1 zero_crossings(const Signal& sig);
 
 /**
+ * @brief Calculates the average of a signal.
+ *
+ * @param sig A reference to the signal.
+ * @return The average value as a double.
+ */
+double avg(const Signal1 &sig);
+
+/**
  * @brief Calculates the variance of a signal.
  *
  * @param sig A reference to the signal.

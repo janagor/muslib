@@ -1,6 +1,5 @@
 #include "convert.hpp"
 #include <sndfile.h>
-#include <string>
 
 namespace muslib::convert {
 int convert_to_format(const std::string &input_file,

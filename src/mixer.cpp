@@ -8,6 +8,12 @@ namespace muslib::mixer {
 // Signal1 zero_crossing_rate(const Signal& sig);
 // Signal1 zero_crossings(const Signal& sig);
 
+double avg(const Signal1 &sig) {
+  if (sig.size() == 0)
+    return 0.0;
+  return std::accumulate(sig.begin(), sig.end(), 0.0) / sig.size();
+}
+
 Signal2 frame(const Signal1 &sig, unsigned frame_length, unsigned hop_length) {
   Signal2 frames;
 
@@ -39,12 +45,6 @@ Signal1 normalized(const Signal1 &sig) {
     normalized.emplace_back(val / norm);
   }
   return normalized;
-}
-
-double avg(const Signal1 &sig) {
-  if (sig.size() == 0)
-    return 0.0;
-  return std::accumulate(sig.begin(), sig.end(), 0.0) / sig.size();
 }
 
 double variance(const Signal1 &sig) {

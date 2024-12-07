@@ -1,6 +1,5 @@
 #pragma once
 #include "common.hpp"
-#include <cstring>
 #include <sndfile.hh>
 
 namespace muslib::io {
