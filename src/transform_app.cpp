@@ -8,7 +8,7 @@ int main() {
   std::vector<double> signal(signal_size, 0.0);
 
   for (int i = 0; i < signal_size; ++i) {
-    signal[i] = sin(2 * M_PI * 440 * i / 44100);
+    signal[i] = sin(2 * std::numbers::pi * 440 * i / 44100);
   }
 
   int n_fft = 2048;

@@ -5,7 +5,7 @@ namespace muslib::transform {
 Signal1 hann_window(int size) {
   Signal1 window(size);
   for (int i = 0; i < size; ++i) {
-    window[i] = 0.5 * (1 - cos(2 * M_PI * i / (size - 1)));
+    window[i] = 0.5 * (1 - cos(2 * std::numbers::pi * i / (size - 1)));
   }
   return window;
 }
@@ -17,7 +17,7 @@ Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length) {
 
 Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
                     const Signal1 &window) {
-  int num_frames = (signal.size() - n_fft) / hop_length + 1;
+  int num_frames = static_cast<int>((signal.size() - n_fft) / hop_length + 1);
 
   Signal2Complex result(num_frames, Signal1Complex(n_fft / 2 + 1));
 

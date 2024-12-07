@@ -1,6 +1,8 @@
 #include <cmath>
 #include <complex>
 #include <numeric>
+#include <cmath>
+#include <numbers>
 #include <vector>
 
 namespace muslib {

@@ -12,7 +12,8 @@ Signal1 load(const std::string &file_name) {
   Signal1 result;
   memset(&sfinfo, 0, sizeof(sfinfo));
 
-  if (!(infile = sf_open(file_name.c_str(), SFM_READ, &sfinfo))) {
+  infile = sf_open(file_name.c_str(), SFM_READ, &sfinfo);
+  if (!infile) {
     std::cout << "Error : could not open file : " << file_name << std::endl;
     puts(sf_strerror(NULL));
     exit(1);
