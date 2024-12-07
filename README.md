@@ -25,3 +25,11 @@ And then:
 ```bash
 pip install .
 ```
+
+# Docs
+
+To generate documentation via Doxygen
+
+```
+doxygen Doxyfile
+```
