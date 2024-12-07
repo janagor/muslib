@@ -5,5 +5,7 @@ init*
 conanfile.txt.bak
 compile_commands.json
 muslib_python_config/*.so
+muslib_python_config/*.pyd
 .cache/
 muslib.egg-info/
+dist
