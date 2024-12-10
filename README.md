@@ -26,6 +26,12 @@ And then:
 pip install .
 ```
 
+Now you can use the library with:
+
+```python
+import muslib
+```
+
 # Docs
 
 To generate documentation via Doxygen
