@@ -18,4 +18,17 @@ PYBIND11_MODULE(io, m) {
         return numpy_array;
       },
       "Load data from a file and return as a numpy array of float64");
+
+  m.def(
+      "to_mono",
+      [](const py::array_t<double> &input, int chnum) -> py::array_t<double> {
+        muslib::Signal1 data(input.data(), input.data() + input.size());
+
+        muslib::Signal1 result = muslib::io::to_mono(data, chnum);
+
+        py::array_t<double> numpy_array(result.size(), result.data());
+
+        return numpy_array;
+      },
+      "to_mono");
 }

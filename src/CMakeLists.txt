@@ -16,5 +16,14 @@ target_link_libraries(transform PUBLIC muslib_transform)
 add_executable(transform_exe transform_app.cpp)
 target_link_libraries(transform_exe PUBLIC muslib_transform)
 
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/muslib_python_config)
+set(DEST_DIR ${CMAKE_SOURCE_DIR}/muslib_lib/)
+
+if(EXISTS ${DEST_DIR})
+    message(STATUS "Removing existing directory: ${DEST_DIR}")
+    file(REMOVE_RECURSE ${DEST_DIR})
+endif()
+file(COPY ${SOURCE_DIR}/ DESTINATION ${DEST_DIR})
+
 install(TARGETS io transform
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/binaries)
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/muslib_lib)

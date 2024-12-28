@@ -6,7 +6,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(m_transform, m) {
+PYBIND11_MODULE(transform, m) {
   m.doc() = "Signal processing";
 
   m.def(

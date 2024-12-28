@@ -19,9 +19,9 @@ setup(
     name='muslib',
     version='0.1.0',
     cmdclass={'build_ext': CMakeBuild},
-    package_dir={'muslib': 'muslib_python_config'},
+    package_dir={'muslib': 'muslib_lib'},
     install_requires=['setuptools', 'pybind11', 'numpy'],
     package_data={
-        'muslib': ['binaries', '*.pyd', '*.so'],
+        'muslib': ['muslib_lib', '*.pyd', '*.so'],
     },
 )

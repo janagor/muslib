@@ -7,7 +7,9 @@ compile_commands.json
 muslib_python_config/*.so
 muslib_python_config/*.pyd
 .cache/
+*/__pycache__/*
 muslib.egg-info/
 dist
 todos.md
 binaries
+muslib_lib
