@@ -37,5 +37,11 @@ PYBIND11_MODULE(io, m) {
       [](const char *filename) -> double {
         return muslib::io::get_samplerate(filename);
       },
-      "Load data from a file and return as a numpy array of float64");
+      "get samplerate");
+  m.def(
+      "get_duration",
+      [](const char *filename) -> double {
+        return muslib::io::get_duration(filename);
+      },
+      "get duration");
 }
