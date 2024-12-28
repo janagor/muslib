@@ -10,3 +10,4 @@ muslib_python_config/*.pyd
 muslib.egg-info/
 dist
 todos.md
+binaries

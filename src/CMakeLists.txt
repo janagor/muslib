@@ -17,4 +17,4 @@ add_executable(transform_exe transform_app.cpp)
 target_link_libraries(transform_exe PUBLIC muslib_transform)
 
 install(TARGETS io transform
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/muslib_python_config)
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/binaries)

@@ -22,6 +22,6 @@ setup(
     package_dir={'muslib': 'muslib_python_config'},
     install_requires=['setuptools', 'pybind11', 'numpy'],
     package_data={
-        'muslib': ['muslib_python_config', '*.pyd', '*.so'],
+        'muslib': ['binaries', '*.pyd', '*.so'],
     },
 )
