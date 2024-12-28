@@ -19,7 +19,7 @@ void ensure_numpy() {
   }
 }
 
-PYBIND11_MODULE(m_io, m) {
+PYBIND11_MODULE(io, m) {
   ensure_numpy();
   m.doc() = "File operations";
 

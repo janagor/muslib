@@ -5,6 +5,11 @@ from setuptools.command.build_ext import build_ext
 
 class CMakeBuild(build_ext):
     def run(self):
+        try:
+            import numpy
+        except ImportError:
+            subprocess.check_call(['pip', 'install', 'numpy'])
+
         subprocess.check_call(['conan', 'install', '.', '--build=missing'])
         subprocess.check_call(['conan', 'build', '.'])
         super().run()
@@ -17,6 +22,6 @@ setup(
     package_dir={'muslib': 'muslib_python_config'},
     install_requires=['setuptools', 'pybind11', 'numpy'],
     package_data={
-        'muslib': ['muslib_python_config', '*.pyd', '.so'],
+        'muslib': ['muslib_python_config', '*.pyd', '*.so'],
     },
 )
