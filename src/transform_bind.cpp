@@ -18,17 +18,17 @@ PYBIND11_MODULE(transform, m) {
         size_t n_frames = coefs.size();
         size_t n_bins = coefs[0].size();
 
-        py::array_t<std::complex<double>> result({n_frames, n_bins});
+        py::array_t<std::complex<double>> result({n_bins, n_frames});
 
         auto result_mutable = result.mutable_unchecked<2>();
         for (size_t i = 0; i < n_frames; ++i) {
           for (size_t j = 0; j < n_bins; ++j) {
-            result_mutable(i, j) = coefs[i][j];
+            result_mutable(j, i) = coefs[i][j];
           }
         }
 
         return result;
       },
       "Compute the Short-Time Fourier Transform (STFT)", py::arg("signal"),
-      py::arg("n_fft"), py::arg("hop_length"));
+      py::arg("n_fft") = 2048, py::arg("hop_length") = 512);
 }

@@ -5,7 +5,8 @@
 namespace muslib::transform {
 
 Signal1 hann_window(int size);
-Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length);
+Signal2Complex stft(const Signal1 &signal, int n_fft = 2048,
+                    int hop_length = 512);
 Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
                     const Signal1 &window);
 

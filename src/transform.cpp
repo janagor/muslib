@@ -17,6 +17,12 @@ Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length) {
 
 Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
                     const Signal1 &window) {
+  // std::complex<double> padding = 0;
+  // int start_k = std::ceil(n_fft / 2 / hop_length);
+  // std::cout << "start_k: " << start_k << std::endl;
+  // int tail_k = (signal.size() + n_fft / 2 - n_fft) / hop_length + 1;
+  // std::cout << "tail_k: " << tail_k << std::endl;
+
   int num_frames = static_cast<int>((signal.size() - n_fft) / hop_length + 1);
 
   Signal2Complex result(num_frames, Signal1Complex(n_fft / 2 + 1));
