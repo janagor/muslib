@@ -76,4 +76,28 @@ Signal1 resample(const Signal1 &original, int from_srate, int to_srate) {
   return resampled_data;
 }
 
+double get_samplerate(const std::string &path) {
+  SNDFILE *infile;
+  SF_INFO sfinfo;
+
+  infile = sf_open(path.c_str(), SFM_READ, &sfinfo);
+  if (!infile) {
+    std::cout << "Error : could not open file : " << path << std::endl;
+    puts(sf_strerror(NULL));
+    exit(1);
+  }
+
+  if (!sf_format_check(&sfinfo)) {
+    sf_close(infile);
+    printf("Invalid encoding\n");
+    exit(1);
+  };
+
+  double result = sfinfo.samplerate;
+
+  sf_close(infile);
+
+  return result;
+}
+
 } // namespace muslib::io

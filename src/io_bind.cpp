@@ -31,4 +31,11 @@ PYBIND11_MODULE(io, m) {
         return numpy_array;
       },
       "to_mono");
+
+  m.def(
+      "get_samplerate",
+      [](const char *filename) -> double {
+        return muslib::io::get_samplerate(filename);
+      },
+      "Load data from a file and return as a numpy array of float64");
 }
