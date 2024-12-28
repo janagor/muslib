@@ -27,8 +27,6 @@ Signal1 to_mono(const Signal1 &input, int chnum) {
 Signal1 load(const std::string &file_name) {
   SNDFILE *infile;
   SF_INFO sfinfo;
-  Signal1 result;
-  memset(&sfinfo, 0, sizeof(sfinfo));
 
   infile = sf_open(file_name.c_str(), SFM_READ, &sfinfo);
   if (!infile) {
@@ -43,11 +41,12 @@ Signal1 load(const std::string &file_name) {
     exit(1);
   };
 
-  Signal1 audioData(sfinfo.frames * sfinfo.channels);
-  sf_read_double(infile, audioData.data(), sfinfo.frames * sfinfo.channels);
+  Signal1 result(sfinfo.frames * sfinfo.channels);
+  sf_read_double(infile, result.data(), sfinfo.frames * sfinfo.channels);
 
   sf_close(infile);
-  return to_mono(audioData, sfinfo.channels);
+
+  return to_mono(result, sfinfo.channels);
 }
 
 Signal1 resample(const Signal1 &original, int from_srate, int to_srate) {
