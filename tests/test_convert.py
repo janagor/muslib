@@ -1,0 +1,40 @@
+import pytest
+import muslib
+import librosa
+import numpy as np
+
+in1 = 10
+in2 = (1 + np.arange(10))
+in3 = (1 + np.arange(100)).reshape(10, 10)
+in4 = (1 + np.arange(1000)).reshape(10, 10, 10)
+
+
+def test_hz_to_mel():
+    assert muslib.convert.hz_to_mel(in1) == librosa.hz_to_mel(in1)
+    assert np.all(muslib.convert.hz_to_mel(in2) == librosa.hz_to_mel(in2))
+    assert np.all(muslib.convert.hz_to_mel(in3) == librosa.hz_to_mel(in3))
+    assert np.all(muslib.convert.hz_to_mel(in4) == librosa.hz_to_mel(in4))
+
+
+def test_db_to_power():
+    assert muslib.convert.db_to_power(in1) == librosa.db_to_power(in1)
+    assert np.all(muslib.convert.db_to_power(in2) == librosa.db_to_power(in2))
+    assert np.all(muslib.convert.db_to_power(in3) == librosa.db_to_power(in3))
+    assert np.all(muslib.convert.db_to_power(in4) == librosa.db_to_power(in4))
+
+
+def test_power_to_db():
+    assert muslib.convert.power_to_db(in1) == librosa.power_to_db(in1)
+    assert np.all(muslib.convert.power_to_db(in2) == librosa.power_to_db(in2))
+    assert np.all(muslib.convert.power_to_db(in3) == librosa.power_to_db(in3))
+    assert np.all(muslib.convert.power_to_db(in4) == librosa.power_to_db(in4))
+
+
+def test_amplitude_to_db():
+    assert muslib.convert.amplitude_to_db(in1) == librosa.amplitude_to_db(in1)
+    assert np.all(muslib.convert.amplitude_to_db(in2)
+                  == librosa.amplitude_to_db(in2))
+    assert np.all(muslib.convert.amplitude_to_db(in3)
+                  == librosa.amplitude_to_db(in3))
+    assert np.all(muslib.convert.amplitude_to_db(in4)
+                  == librosa.amplitude_to_db(in4))

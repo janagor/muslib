@@ -1,37 +1,48 @@
 #include "convert.hpp"
-#include <sndfile.h>
+#include <cmath>
 
 namespace muslib::convert {
-int convert_to_format(const std::string &input_file,
-                      const std::string &output_file) {
-  SF_INFO sfinfo_in, sfinfo_out;
-  SNDFILE *infile, *outfile;
 
-  if (!(infile = sf_open(input_file.c_str(), SFM_READ, &sfinfo_in))) {
-    std::cerr << "Conversion error, cannot open input file :" << input_file
-              << std::endl;
-    return -1;
-  }
+std::vector<double> hz_to_mel(const std::vector<double> &freqs) {
+  double F_MIN = 0.0;
+  double F_SP = 200.0 / 3;
 
-  sfinfo_out = sfinfo_in;
-  sfinfo_out.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+  std::vector<double> mels(freqs);
+  for (auto &mel : mels)
+    mel = (mel - F_MIN) / F_SP;
 
-  if (!(outfile = sf_open(input_file.c_str(), SFM_WRITE, &sfinfo_out))) {
-    std::cerr << "Conversion error, cannot open output file :" << output_file
-              << std::endl;
-    return -2;
-  }
+  double MIN_LOG_HZ = 1000.0;
+  double MIN_LOG_MEL = (MIN_LOG_HZ - F_MIN) / F_SP;
+  double LOGSTEP = std::log(6.4) / 27.0;
 
-  short *buffer = new short[sfinfo_in.frames];
+  for (size_t i = 0; i < mels.size(); ++i)
+    if (mels[i] >= MIN_LOG_HZ)
+      mels[i] = MIN_LOG_MEL + std::log(freqs[i] / MIN_LOG_HZ) / LOGSTEP;
 
-  while (sf_readf_short(infile, buffer, sfinfo_in.frames) > 0) {
-    sf_writef_short(outfile, buffer, sfinfo_out.frames);
-  }
-
-  sf_close(infile);
-  sf_close(outfile);
-
-  delete[] buffer;
-  return 0;
+  return mels;
 }
+
+std::vector<double> power_to_db(const std::vector<double> &signal) {
+  std::vector<double> res(signal);
+  for (auto &mel : res) {
+    mel = 10 * std::log10(std::max(mel, 0.0000001));
+  }
+  return res;
+}
+
+std::vector<double> db_to_power(const std::vector<double> &signal) {
+  std::vector<double> res(signal);
+  for (auto &mel : res) {
+    mel = std::pow(10., 0.1 * mel);
+  }
+  return res;
+}
+
+std::vector<double> amplitude_to_db(const std::vector<double> &signal) {
+  std::vector<double> res(signal);
+  for (auto &mel : res)
+    mel = std::pow(mel, 2);
+  return power_to_db(res);
+}
+
 } // namespace muslib::convert

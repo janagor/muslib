@@ -9,9 +9,11 @@ target_link_libraries(muslib_transform PUBLIC FFTW3::fftw3)
 
 pybind11_add_module(io io_bind.cpp)
 pybind11_add_module(transform transform_bind.cpp)
+pybind11_add_module(convert convert_bind.cpp)
 
 target_link_libraries(io PUBLIC muslib_io)
 target_link_libraries(transform PUBLIC muslib_transform)
+target_link_libraries(convert PUBLIC muslib_convert)
 
 add_executable(transform_exe transform_app.cpp)
 target_link_libraries(transform_exe PUBLIC muslib_transform)
@@ -25,5 +27,5 @@ if(EXISTS ${DEST_DIR})
 endif()
 file(COPY ${SOURCE_DIR}/ DESTINATION ${DEST_DIR})
 
-install(TARGETS io transform
+install(TARGETS io transform convert
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/muslib_lib)
