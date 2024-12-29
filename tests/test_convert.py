@@ -8,6 +8,7 @@ in2 = (1 + np.arange(10))
 in3 = (1 + np.arange(100)).reshape(10, 10)
 in4 = (1 + np.arange(1000)).reshape(10, 10, 10)
 in5 = np.arange(0, 22050, 256)
+in6 = 11025.0
 
 
 def test_hz_to_mel():
@@ -15,6 +16,14 @@ def test_hz_to_mel():
     assert np.all(muslib.convert.hz_to_mel(in2) == librosa.hz_to_mel(in2))
     assert np.all(muslib.convert.hz_to_mel(in3) == librosa.hz_to_mel(in3))
     assert np.all(muslib.convert.hz_to_mel(in4) == librosa.hz_to_mel(in4))
+    assert np.all(muslib.convert.hz_to_mel(in6) == librosa.hz_to_mel(in6))
+
+
+def test_mel_to_hz():
+    assert muslib.convert.mel_to_hz(in1) == librosa.mel_to_hz(in1)
+    assert np.all(muslib.convert.mel_to_hz(in2) == librosa.mel_to_hz(in2))
+    assert np.all(muslib.convert.mel_to_hz(in3) == librosa.mel_to_hz(in3))
+    assert np.all(muslib.convert.mel_to_hz(in4) == librosa.mel_to_hz(in4))
 
 
 def test_db_to_power():

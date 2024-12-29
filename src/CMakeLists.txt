@@ -1,11 +1,11 @@
-add_library(muslib_io STATIC io.cpp)
+add_library(muslib_io STATIC io.cpp io.hpp)
 add_library(muslib_transform STATIC transform.cpp)
 add_library(muslib_mixer STATIC mixer.cpp)
 add_library(muslib_beat STATIC beat.cpp)
 add_library(muslib_convert STATIC convert.cpp)
 
 target_link_libraries(muslib_io PUBLIC SndFile::sndfile)
-target_link_libraries(muslib_transform PUBLIC FFTW3::fftw3)
+target_link_libraries(muslib_transform PUBLIC FFTW3::fftw3 muslib_convert)
 
 pybind11_add_module(io io_bind.cpp)
 pybind11_add_module(transform transform_bind.cpp)

@@ -27,6 +27,7 @@ Signal1 to_mono(const Signal1 &input, int chnum) {
 Signal1 load(const std::string &file_name) {
   SNDFILE *infile;
   SF_INFO sfinfo;
+  memset(&sfinfo, 0, sizeof(sfinfo));
 
   infile = sf_open(file_name.c_str(), SFM_READ, &sfinfo);
   if (!infile) {
@@ -66,10 +67,10 @@ Signal1 resample(const Signal1 &original, int from_srate, int to_srate) {
     double frac = src_pos - int_pos;
 
     if (int_pos + 1 < from_nframes) {
-      resampled_data[i] =
-          (1.0 - frac) * original[int_pos] + frac * original[int_pos + 1];
+      resampled_data.at(i) =
+          (1.0 - frac) * original.at(int_pos) + frac * original.at(int_pos + 1);
     } else {
-      resampled_data[i] = original[int_pos];
+      resampled_data.at(i) = original.at(int_pos);
     }
   }
 

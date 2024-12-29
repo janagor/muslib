@@ -27,6 +27,24 @@ PYBIND11_MODULE(convert, m) {
       "Compute the Short-Time Fourier Transform (STFT)");
 
   m.def(
+      "mel_to_hz",
+      [](py::array_t<double> mels) {
+        py::buffer_info buf = mels.request();
+        std::vector<double> vec(static_cast<double *>(buf.ptr),
+                                static_cast<double *>(buf.ptr) + buf.size);
+        std::vector<double> output_vec = muslib::convert::mel_to_hz(vec);
+
+        py::array_t<double> result(buf);
+        auto result_buf = result.request();
+        double *result_ptr = static_cast<double *>(result_buf.ptr);
+
+        std::copy(output_vec.begin(), output_vec.end(), result_ptr);
+
+        return result;
+      },
+      "Compute the Short-Time Fourier Transform (STFT)");
+
+  m.def(
       "db_to_power",
       [](py::array_t<double> freqs) {
         py::buffer_info buf = freqs.request();
