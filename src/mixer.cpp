@@ -1,5 +1,6 @@
 #include "mixer.hpp"
 
+#include <numeric>
 namespace {
 
 void _cos(muslib::Signal1 &sig) {
@@ -23,7 +24,26 @@ namespace muslib::mixer {
 // Signal1 cos(double duration, unsigned sample_rate, double freq);
 // Signal1 zero_crossing_rate(const Signal& sig);
 // Signal1 zero_crossings(const Signal& sig);
-//
+
+Signal1 tone(double frequency, double sr, unsigned length, double duration,
+             double phi) {
+  if (!length) {
+    if (duration <= 0) {
+      throw std::runtime_error(
+          "either 'length' or 'duration' must be provided");
+    }
+    length = int(duration * sr);
+  }
+
+  Signal1 res(length);
+
+  std::iota(res.begin(), res.end(), 0);
+  std::for_each(res.begin(), res.end(), [&](double &val) {
+    val = std::cos(2 * std::numbers::pi * frequency * val / sr + phi);
+  });
+  return res;
+}
+
 Signal1 chirp(double fmin, double fmax, double sr, int length, double duration,
               double phi) {
   // NOTE: phi in radians
