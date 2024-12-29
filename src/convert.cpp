@@ -45,4 +45,14 @@ std::vector<double> amplitude_to_db(const std::vector<double> &signal) {
   return power_to_db(res);
 }
 
+std::vector<int> samples_to_frames(const std::vector<int> &samples,
+                                   int hop_length, int n_fft) {
+  int offset = n_fft / 2;
+  std::vector<int> frames(samples);
+  std::for_each(frames.begin(), frames.end(), [&](int &sample) {
+    sample = std::floor(sample - offset) / hop_length;
+  });
+  return frames;
+}
+
 } // namespace muslib::convert

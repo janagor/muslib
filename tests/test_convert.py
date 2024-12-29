@@ -7,6 +7,7 @@ in1 = 10
 in2 = (1 + np.arange(10))
 in3 = (1 + np.arange(100)).reshape(10, 10)
 in4 = (1 + np.arange(1000)).reshape(10, 10, 10)
+in5 = np.arange(0, 22050, 256)
 
 
 def test_hz_to_mel():
@@ -38,3 +39,16 @@ def test_amplitude_to_db():
                   == librosa.amplitude_to_db(in3))
     assert np.all(muslib.convert.amplitude_to_db(in4)
                   == librosa.amplitude_to_db(in4))
+
+
+def test_samples_to_frames():
+    assert np.all(muslib.convert.samples_to_frames(in1)
+                  == librosa.samples_to_frames(in1))
+    assert np.all(muslib.convert.samples_to_frames(in2)
+                  == librosa.samples_to_frames(in2))
+    assert np.all(muslib.convert.samples_to_frames(in3)
+                  == librosa.samples_to_frames(in3))
+    assert np.all(muslib.convert.samples_to_frames(in4)
+                  == librosa.samples_to_frames(in4))
+    assert np.all(muslib.convert.samples_to_frames(in5)
+                  == librosa.samples_to_frames(in5))

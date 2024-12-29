@@ -77,4 +77,24 @@ PYBIND11_MODULE(convert, m) {
         return result;
       },
       "Compute the Short-Time Fourier Transform (STFT)");
+
+  m.def(
+      "samples_to_frames",
+      [](py::array_t<int> samples, int hop_length, int n_fft) {
+        py::buffer_info buf = samples.request();
+        std::vector<int> vec(static_cast<int *>(buf.ptr),
+                             static_cast<int *>(buf.ptr) + buf.size);
+        std::vector<int> output_vec =
+            muslib::convert::samples_to_frames(vec, hop_length, n_fft);
+
+        py::array_t<int> result(buf);
+        auto result_buf = result.request();
+        int *result_ptr = static_cast<int *>(result_buf.ptr);
+
+        std::copy(output_vec.begin(), output_vec.end(), result_ptr);
+
+        return result;
+      },
+      "samples to frames", py::arg("samples"), py::arg("hop_length") = 512,
+      py::arg("n_fft") = 0);
 }
