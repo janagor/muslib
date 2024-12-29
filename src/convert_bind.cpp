@@ -97,4 +97,24 @@ PYBIND11_MODULE(convert, m) {
       },
       "samples to frames", py::arg("samples"), py::arg("hop_length") = 512,
       py::arg("n_fft") = 0);
+
+  m.def(
+      "frames_to_samples",
+      [](py::array_t<int> frames, int hop_length, int n_fft) {
+        py::buffer_info buf = frames.request();
+        std::vector<int> vec(static_cast<int *>(buf.ptr),
+                             static_cast<int *>(buf.ptr) + buf.size);
+        std::vector<int> output_vec =
+            muslib::convert::frames_to_samples(vec, hop_length, n_fft);
+
+        py::array_t<int> result(buf);
+        auto result_buf = result.request();
+        int *result_ptr = static_cast<int *>(result_buf.ptr);
+
+        std::copy(output_vec.begin(), output_vec.end(), result_ptr);
+
+        return result;
+      },
+      "frames to samples", py::arg("frames"), py::arg("hop_length") = 512,
+      py::arg("n_fft") = 0);
 }

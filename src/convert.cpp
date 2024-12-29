@@ -49,10 +49,18 @@ std::vector<int> samples_to_frames(const std::vector<int> &samples,
                                    int hop_length, int n_fft) {
   int offset = n_fft / 2;
   std::vector<int> frames(samples);
-  std::for_each(frames.begin(), frames.end(), [&](int &sample) {
-    sample = std::floor(sample - offset) / hop_length;
+  std::for_each(frames.begin(), frames.end(), [&](int &frame) {
+    frame = std::floor(frame - offset) / hop_length;
   });
   return frames;
 }
 
+std::vector<int> frames_to_samples(const std::vector<int> &frames,
+                                   int hop_length, int n_fft) {
+  int offset = n_fft / 2;
+  std::vector<int> samples(frames);
+  std::for_each(samples.begin(), samples.end(),
+                [&](int &sample) { sample = (sample * hop_length) + offset; });
+  return samples;
+}
 } // namespace muslib::convert

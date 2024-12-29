@@ -52,3 +52,11 @@ def test_samples_to_frames():
                   == librosa.samples_to_frames(in4))
     assert np.all(muslib.convert.samples_to_frames(in5)
                   == librosa.samples_to_frames(in5))
+
+
+def test_frames_to_samples():
+    y, sr = librosa.load(librosa.ex('choice'))
+    _, beats = librosa.beat.beat_track(y=y, sr=sr)
+
+    assert np.all(muslib.convert.frames_to_samples(beats)
+                  == librosa.frames_to_samples(beats))

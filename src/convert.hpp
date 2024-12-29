@@ -8,4 +8,6 @@ std::vector<double> power_to_db(const std::vector<double> &signal);
 std::vector<double> amplitude_to_db(const std::vector<double> &signal);
 std::vector<int> samples_to_frames(const std::vector<int> &samples,
                                    int hop_length = 512, int n_fft = 0);
+std::vector<int> frames_to_samples(const std::vector<int> &frames,
+                                   int hop_length = 512, int n_fft = 0);
 } // namespace muslib::convert
