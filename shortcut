@@ -1,5 +1,8 @@
 #!/bin/bash
+# if you want to debug:
+# conan build . --build=missing -s build_type=Debug
 conan build .
+
 pip install .
 # python3 t.py
 
