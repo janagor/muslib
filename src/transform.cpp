@@ -100,7 +100,7 @@ Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
 
 Signal2 compute_magnitude_spectrum(const Signal2Complex &stft_result) {
   Signal2 magnitude_spectrum(stft_result.size(),
-                             Signal1(stft_result.at(0).size()));
+                             Signal1(stft_result.at(0).size(), 0));
 
   for (size_t i = 0; i < stft_result.size(); ++i) {
     for (size_t j = 0; j < stft_result.at(i).size(); ++j) {
