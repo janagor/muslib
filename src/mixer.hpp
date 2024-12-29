@@ -1,8 +1,14 @@
 #include "common.hpp"
 
-namespace muslib::mixer {
+namespace {
+constexpr double default_phi = -std::numbers::pi * 0.5;
+}
 
+namespace muslib::mixer {
 // TODO: to be implemented
+// Signal1 tone(double freq, unsigned sample_rate, double freq);
+Signal1 chirp(double fmin, double fmax, double sr = 22050, int length = 0,
+              double duration = -1, double phi = default_phi);
 // Signal1 sin(double duration, unsigned sample_rate, double freq);
 // Signal1 cos(double duration, unsigned sample_rate, double freq);
 // Signal1 zero_crossing_rate(const Signal& sig);

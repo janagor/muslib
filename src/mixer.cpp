@@ -1,5 +1,21 @@
 #include "mixer.hpp"
 
+namespace {
+
+void _cos(muslib::Signal1 &sig) {
+  for (auto &val : sig)
+    val = std::cos(val);
+}
+
+void _chirp_phase(muslib::Signal1 &t, double f0, double t1, double f1) {
+  double beta = (f1 - f0) / t1;
+  for (auto &phase : t) {
+    phase = 2 * std::numbers::pi * (f0 * phase + 0.5 * beta * phase * phase);
+  }
+}
+
+} // namespace
+
 namespace muslib::mixer {
 
 // TODO: to be implemented
@@ -7,6 +23,30 @@ namespace muslib::mixer {
 // Signal1 cos(double duration, unsigned sample_rate, double freq);
 // Signal1 zero_crossing_rate(const Signal& sig);
 // Signal1 zero_crossings(const Signal& sig);
+//
+Signal1 chirp(double fmin, double fmax, double sr, int length, double duration,
+              double phi) {
+  // NOTE: phi in radians
+  double period = 1.0 / sr;
+  if (!length) {
+    if (duration < 0)
+      throw std::runtime_error(
+          "either 'length' or 'duration' must be provided");
+  } else
+    duration = period * length;
+
+  Signal1 res(duration * sr);
+  std::iota(res.begin(), res.end(), 0);
+  for (auto &val : res)
+    val = val / sr;
+
+  _chirp_phase(res, fmin, duration, fmax);
+  for (auto &val : res) {
+    val += phi;
+  }
+  _cos(res);
+  return res;
+}
 
 double avg(const Signal1 &sig) {
   if (sig.size() == 0)
