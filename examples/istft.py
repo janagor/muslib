@@ -4,41 +4,60 @@ import librosa.display
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Wczytaj plik audio
-filename = librosa.example('trumpet')  # Przykładowy plik audio z librosa
-# Wczytanie pliku z oryginalnym sample rate
+# Load the example audio
+filename = librosa.example('trumpet')
 audio, sr = librosa.load(filename, sr=None)
 
-n_fft = 1024       # Rozmiar okna FFT
-hop_length = 256   # Przesunięcie okna
+n_fft = 1024
+hop_length = 256
 
-stft_result = muslib.transform.stft(
+stft_result_muslib = muslib.transform.stft(
     audio,
     n_fft=n_fft,
     hop_length=hop_length)
 
+stft_result_librosa = muslib.transform.stft(
+    audio,
+    n_fft=n_fft,
+    hop_length=hop_length)
 
-reconstructed_audio = muslib.transform.istft(
-    stft_result, n_fft=n_fft, hop_length=hop_length)
-print(reconstructed_audio.shape)
-plt.figure(figsize=(12, 6))
+reconstructed_audio_muslib = muslib.transform.istft(
+    stft_result_muslib, n_fft=n_fft, hop_length=hop_length)
+reconstructed_audio_librosa = librosa.istft(
+    stft_result_librosa, n_fft=n_fft, hop_length=hop_length)
 
-# Wykres 1: Oryginalny sygnał
-plt.subplot(2, 1, 1)
+plt.figure(figsize=(12, 10))
+
+plt.subplot(2, 2, 1)
 plt.plot(audio, label="Oryginalny sygnał", color="blue", alpha=0.7)
 plt.title("Oryginalny sygnał")
 plt.xlabel("Czas (próbki)")
 plt.ylabel("Amplituda")
 plt.legend()
 
-# Wykres 2: Zrekonstruowany sygnał
-plt.subplot(2, 1, 2)
-plt.plot(reconstructed_audio, label="Zrekonstruowany sygnał",
+plt.subplot(2, 2, 2)
+plt.plot(reconstructed_audio_muslib, label="Zrekonstruowany sygnał (muslib)",
          color="green", alpha=0.7)
-plt.title("Zrekonstruowany sygnał (po STFT i ISTFT)")
+plt.title("Zrekonstruowany sygnał (muslib)")
+plt.xlabel("Czas (próbki)")
+plt.ylabel("Amplituda")
+plt.legend()
+
+
+plt.subplot(2, 2, 3)
+plt.plot(audio, label="Oryginalny sygnał", color="blue", alpha=0.7)
+plt.title("Oryginalny sygnał (copy)")
+plt.xlabel("Czas (próbki)")
+plt.ylabel("Amplituda")
+plt.legend()
+plt.subplot(2, 2, 4)
+plt.plot(reconstructed_audio_librosa, label="Zrekonstruowany sygnał (librosa)",
+         color="red", alpha=0.7)
+plt.title("Zrekonstruowany sygnał (librosa)")
 plt.xlabel("Czas (próbki)")
 plt.ylabel("Amplituda")
 plt.legend()
 
 plt.tight_layout()
 plt.show()
+

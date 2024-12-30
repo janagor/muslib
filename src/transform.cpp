@@ -70,34 +70,42 @@ Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
                     const Signal1 &window) {
 
   int num_frames = static_cast<int>((signal.size() - n_fft) / hop_length + 1);
-
   Signal2Complex result(num_frames, Signal1Complex(n_fft / 2 + 1));
 
-  fftw_plan plan = fftw_plan_dft_r2c_1d(n_fft, nullptr, nullptr, FFTW_ESTIMATE);
+  // Allocate memory for a single FFTW complex buffer
+  fftw_complex *fft_buffer = new fftw_complex[n_fft];
+
+  // Plan the FFT using fftw_plan_dft_1d
+  fftw_plan plan = fftw_plan_dft_1d(n_fft, fft_buffer, fft_buffer, FFTW_FORWARD,
+                                    FFTW_ESTIMATE);
 
   for (int frame = 0; frame < num_frames; ++frame) {
     int start_idx = frame * hop_length;
-    Signal1 windowed_signal(n_fft, 0.0);
 
+    // Window the signal and copy into the fft_buffer (real part only)
     for (int i = 0; i < n_fft; ++i) {
       if (static_cast<size_t>(start_idx + i) < signal.size()) {
-        windowed_signal[i] = signal[start_idx + i] * window[i];
+        fft_buffer[i][0] = signal[start_idx + i] * window[i]; // Real part
+        fft_buffer[i][1] = 0.0; // Imaginary part is zero for the real signal
+      } else {
+        fft_buffer[i][0] = 0.0; // Zero padding
+        fft_buffer[i][1] = 0.0;
       }
     }
 
-    fftw_complex *fft_result = new fftw_complex[n_fft / 2 + 1];
+    // Perform the FFT (in-place)
+    fftw_execute(plan);
 
-    fftw_execute_dft_r2c(plan, windowed_signal.data(), fft_result);
-
+    // Store the FFT result (only the positive frequencies)
     for (int i = 0; i < n_fft / 2 + 1; ++i) {
       result[frame][i] =
-          std::complex<double>(fft_result[i][0], fft_result[i][1]);
+          std::complex<double>(fft_buffer[i][0], fft_buffer[i][1]);
     }
-
-    delete[] fft_result;
   }
 
+  // Clean up FFTW plan and allocated memory
   fftw_destroy_plan(plan);
+  delete[] fft_buffer;
 
   return result;
 }

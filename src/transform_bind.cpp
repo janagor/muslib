@@ -36,10 +36,8 @@ PYBIND11_MODULE(transform, m) {
       "istft",
       [](const py::array_t<std::complex<double>> &coefs, int n_fft,
          int hop_length) {
-        // Pobranie informacji o buforze z numpy array
         py::buffer_info buf_info = coefs.request();
 
-        // Sprawdzenie wymiarów
         if (buf_info.ndim != 2)
           throw std::runtime_error("Number of dimensions must be two");
 
