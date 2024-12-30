@@ -1,5 +1,7 @@
 #include "transform.hpp"
 
+#include <fftw3.h>
+
 namespace muslib::transform {
 
 Signal1 _diff(const Signal1 &vals) {
@@ -66,11 +68,6 @@ Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length) {
 
 Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
                     const Signal1 &window) {
-  // std::complex<double> padding = 0;
-  // int start_k = std::ceil(n_fft / 2 / hop_length);
-  // std::cout << "start_k: " << start_k << std::endl;
-  // int tail_k = (signal.size() + n_fft / 2 - n_fft) / hop_length + 1;
-  // std::cout << "tail_k: " << tail_k << std::endl;
 
   int num_frames = static_cast<int>((signal.size() - n_fft) / hop_length + 1);
 
@@ -84,18 +81,66 @@ Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
 
     for (int i = 0; i < n_fft; ++i) {
       if (static_cast<size_t>(start_idx + i) < signal.size()) {
-        windowed_signal.at(i) = signal.at(start_idx + i) * window.at(i);
+        windowed_signal[i] = signal[start_idx + i] * window[i];
       }
     }
 
-    fftw_complex *fft_result =
-        reinterpret_cast<fftw_complex *>(result.at(frame).data());
+    fftw_complex *fft_result = new fftw_complex[n_fft / 2 + 1];
+
     fftw_execute_dft_r2c(plan, windowed_signal.data(), fft_result);
+
+    for (int i = 0; i < n_fft / 2 + 1; ++i) {
+      result[frame][i] =
+          std::complex<double>(fft_result[i][0], fft_result[i][1]);
+    }
+
+    delete[] fft_result;
   }
 
   fftw_destroy_plan(plan);
 
   return result;
+}
+
+Signal1 istft(const Signal2Complex &stft_matrix, int n_fft, int hop_length) {
+  Signal1 window = hann_window(n_fft);
+  return istft(stft_matrix, n_fft, hop_length, window);
+}
+
+Signal1 istft(const Signal2Complex &stft_frames, int fft_size, int hop_size,
+              const Signal1 &window) {
+
+  int n_frames = stft_frames.size();
+  int n_samples = (n_frames - 1) * hop_size + fft_size;
+
+  std::vector<double> signal(n_samples, 0.0);
+
+  fftw_plan p = fftw_plan_dft_1d(fft_size, nullptr, nullptr, FFTW_BACKWARD,
+                                 FFTW_ESTIMATE);
+
+  for (int t = 0; t < n_frames; ++t) {
+    fftw_complex *frame_in = new fftw_complex[fft_size];
+
+    for (int i = 0; i < fft_size; ++i) {
+      frame_in[i][0] = real(stft_frames[t][i]);
+      frame_in[i][1] = imag(stft_frames[t][i]);
+    }
+
+    fftw_execute_dft(p, frame_in, frame_in);
+
+    for (int i = 0; i < fft_size; ++i) {
+      int index = t * hop_size + i;
+      if (index < n_samples) {
+        signal[index] += frame_in[i][0] * window[i];
+      }
+    }
+
+    delete[] frame_in;
+  }
+
+  fftw_destroy_plan(p);
+
+  return signal;
 }
 
 Signal2 compute_magnitude_spectrum(const Signal2Complex &stft_result) {

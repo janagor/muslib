@@ -33,6 +33,44 @@ PYBIND11_MODULE(transform, m) {
       py::arg("n_fft") = 2048, py::arg("hop_length") = 512);
 
   m.def(
+      "istft",
+      [](const py::array_t<std::complex<double>> &coefs, int n_fft,
+         int hop_length) {
+        // Pobranie informacji o buforze z numpy array
+        py::buffer_info buf_info = coefs.request();
+
+        // Sprawdzenie wymiarów
+        if (buf_info.ndim != 2)
+          throw std::runtime_error("Number of dimensions must be two");
+
+        auto r = coefs.unchecked<2>();
+
+        int num_frames = r.shape(0);
+        std::cout << "num_frames: " << num_frames << std::endl;
+        int num_bins = r.shape(1);
+        std::cout << "num_bins: " << num_bins << std::endl;
+
+        std::vector<std::vector<std::complex<double>>> coefs_vec(
+            num_bins, muslib::Signal1Complex(num_frames));
+
+        for (py::ssize_t i = 0; i < r.shape(0); ++i) {
+          for (py::ssize_t j = 0; j < r.shape(1); ++j) {
+            coefs_vec.at(j).at(i) = r(i, j);
+          }
+        }
+
+        muslib::Signal1 signal =
+            muslib::transform::istft(coefs_vec, n_fft, hop_length);
+
+        py::array_t<double> result(signal.size());
+        std::copy(signal.begin(), signal.end(), result.mutable_data());
+
+        return result;
+      },
+      "Compute the Inverse Short-Time Fourier Transform (STFT)",
+      py::arg("signal"), py::arg("n_fft") = 2048, py::arg("hop_length") = 512);
+
+  m.def(
       "melspectrogram",
       [](const py::array_t<double> &input, double sr) -> py::array_t<double> {
         py::buffer_info buf = input.request();
