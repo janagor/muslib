@@ -1,12 +1,13 @@
 #!/bin/bash
 # if you want to debug:
-# conan build . --build=missing -s build_type=Debug
-conan build .
+conan build . --build=missing -s build_type=Debug
+# conan build .
 
 pip install .
 # python3 t.py
 
 pytest "tests/test_convert.py"
 pytest "tests/test_transform.py"
+pytest "tests/test_mixer.py"
 # python "tests/test_convert.py"
 # pytest "tests/io.py"

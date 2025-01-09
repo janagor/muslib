@@ -12,8 +12,9 @@ Signal1 chirp(double fmin, double fmax, double sr = 22050, int length = 0,
               double duration = -1, double phi = default_phi);
 // Signal1 sin(double duration, unsigned sample_rate, double freq);
 // Signal1 cos(double duration, unsigned sample_rate, double freq);
-// Signal1 zero_crossing_rate(const Signal& sig);
-// Signal1 zero_crossings(const Signal& sig);
+std::vector<bool> zero_crossings(const Signal1 &sig, bool pad = true);
+Signal1 zero_crossing_rate(const Signal1 &sig, unsigned frame_length = 2048,
+                           unsigned hop_length = 512);
 
 /**
  * @brief Calculates the average of a signal.

@@ -9,7 +9,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # set (PYTHON_EXECUTABLE "/home/janagorski/.pyenv/shims/python")
-set(Python3_VERSION 3.12)
+# set(Python3_VERSION 3.12)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wextra -Wall -pedantic -fsanitize=undefined -g")
