@@ -26,5 +26,7 @@ Signal1 mel_frequencies(unsigned n_mels = 128, double fmin = 0.0,
 Signal2 mel(double sr, int n_fft, int n_mels = 128);
 Signal2 melspectrogram(const Signal1 &y, double sr = 22050);
 Signal1 fft_frequencies(double sr = 22050, unsigned n_fft = 2048);
+Signal2 mfcc(const Signal1 &y, double sr);
+Signal2 dct(const Signal2 &input);
 
 } // namespace muslib::transform

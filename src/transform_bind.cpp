@@ -44,9 +44,9 @@ PYBIND11_MODULE(transform, m) {
         auto r = coefs.unchecked<2>();
 
         int num_frames = r.shape(0);
-        std::cout << "num_frames: " << num_frames << std::endl;
+        // std::cout << "num_frames: " << num_frames << std::endl;
         int num_bins = r.shape(1);
-        std::cout << "num_bins: " << num_bins << std::endl;
+        // std::cout << "num_bins: " << num_bins << std::endl;
 
         std::vector<std::vector<std::complex<double>>> coefs_vec(
             num_bins, muslib::Signal1Complex(num_frames));
@@ -80,12 +80,12 @@ PYBIND11_MODULE(transform, m) {
         size_t n_frames = coefs.size();
         size_t n_bins = coefs[0].size();
 
-        py::array_t<double> result({n_bins, n_frames});
+        py::array_t<double> result({n_frames, n_bins});
 
         auto result_mutable = result.mutable_unchecked<2>();
         for (size_t i = 0; i < n_frames; ++i) {
           for (size_t j = 0; j < n_bins; ++j) {
-            result_mutable(j, i) = coefs[i][j];
+            result_mutable(i, j) = coefs[i][j];
           }
         }
 
@@ -137,4 +137,28 @@ PYBIND11_MODULE(transform, m) {
         return result;
       },
       "fft_frequencies", py::arg("sr") = 22050, py::arg("n_fft") = 2048);
+  m.def(
+      "mfcc",
+      [](const py::array_t<double> &input, double sr) -> py::array_t<double> {
+        py::buffer_info buf = input.request();
+        std::vector<double> vec(static_cast<double *>(buf.ptr),
+                                static_cast<double *>(buf.ptr) + buf.size);
+
+        muslib::Signal2 coefs = muslib::transform::mfcc(vec, sr);
+
+        size_t n_frames = coefs.size();
+        size_t n_bins = coefs[0].size();
+
+        py::array_t<double> result({n_frames, n_bins});
+
+        auto result_mutable = result.mutable_unchecked<2>();
+        for (size_t i = 0; i < n_frames; ++i) {
+          for (size_t j = 0; j < n_bins; ++j) {
+            result_mutable(i, j) = coefs[i][j];
+          }
+        }
+
+        return result;
+      },
+      "mfcc", py::arg("signal"), py::arg("sr") = 22050);
 }

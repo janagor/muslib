@@ -222,33 +222,123 @@ Signal2 mel(double sr, int n_fft, int n_mels) {
 }
 
 Signal2 _melspectrogram(const Signal2 &S, const Signal2 &mel_basis) {
-  // Zmienna przechowująca wynik (num_time, num_mels)
-  int num_time = S.size();               // Liczba próbek czasowych
-  int num_freq = mel_basis.at(0).size(); // Liczba częstotliwości
-  int num_mels = mel_basis.size();       // Liczba filtrów Mel
+  int F = S.size();
+  int T = S.at(0).size();
+  int M = mel_basis.size();
 
-  // Inicjalizacja wynikowej macierzy melspec (num_time, num_mels)
-  Signal2 melspec(num_time, Signal1(num_mels, 0.0));
+  Signal2 melspec(M, Signal1(F, 0.0));
 
-  // Iteracja po próbkach czasowych (t) i filtrach Mel (m)
-  for (int t = 0; t < num_time; ++t) {
-    for (int m = 0; m < num_mels; ++m) {
-      double sum = 0.0;
-      // Suma iloczynów odpowiadających częstotliwości z S[t] i filtrów Mel
-      // mel_basis[m]
-      for (int f = 0; f < num_freq; ++f) {
-        sum += S.at(t).at(f) * mel_basis.at(m).at(f);
+  for (int f = 0; f < F; ++f) {
+    for (int m = 0; m < M; ++m) {
+      for (int t = 0; t < T; ++t) {
+        melspec.at(m).at(f) += S.at(f).at(t) * mel_basis.at(m).at(t);
       }
-      melspec.at(t).at(m) = sum;
     }
   }
 
   return melspec;
 }
 Signal2 melspectrogram(const Signal1 &y, double sr) {
+  auto n_fft = 2048;
   auto S = _spectogram(y);
-  auto mel_basis = mel(sr, 512);
+  auto mel_basis = mel(sr, n_fft);
   return _melspectrogram(S, mel_basis);
 }
+namespace {
+[[maybe_unused]] Signal2 transpose(const Signal2 &sig) {
+  size_t num_frames = sig.size();
+  size_t frame_length = sig[0].size();
+
+  Signal2 transposed(frame_length, Signal1(num_frames));
+
+  for (size_t i = 0; i < frame_length; ++i) {
+    for (size_t j = 0; j < num_frames; ++j) {
+      transposed.at(i).at(j) = sig.at(j).at(i);
+    }
+  }
+  return transposed;
+}
+
+} // namespace
+
+namespace {
+[[maybe_unused]] Signal2 _dct_coef(size_t N) {
+  Signal2 dct_coef(N, Signal1(N));
+
+  for (size_t k = 0; k < N; ++k) {
+    for (size_t n = 0; n < N; ++n) {
+      if (k == 0) {
+        dct_coef.at(k).at(n) = std::sqrt(1.0 / N);
+      } else {
+        dct_coef.at(k).at(n) =
+            std::sqrt(2.0 / N) * std::cos(M_PI * k * (2 * n + 1) / (2.0 * N));
+      }
+    }
+  }
+
+  return dct_coef;
+}
+
+} // namespace
+
+Signal2 dct(const Signal2 &input) {
+  size_t N = input.size();
+  size_t M = input.at(0).size();
+
+  Signal2 output1(N, Signal1(M));
+  auto dct_matrix = _dct_coef(M);
+
+  for (size_t i = 0; i < N; ++i) {
+    Signal1 output(N);
+
+    for (size_t k = 0; k < M; ++k) {
+      double sum = 0.0;
+      for (size_t n = 1; n < M; ++n) {
+        sum += input.at(i).at(n) * dct_matrix.at(k).at(n);
+      }
+      output[k] = sum;
+    }
+    output1.at(i) = output;
+  }
+
+  return output1;
+}
+
+Signal2 mfcc(const Signal1 &y, double sr) {
+  [[maybe_unused]] size_t n_mfcc = 20;
+  auto S = melspectrogram(y, sr);
+
+  for (size_t i = 0; i < S.size(); ++i) {
+    S.at(i) = convert::power_to_db(S.at(i));
+  }
+
+  S = transpose(S);
+  S = dct(S);
+
+  for (size_t i = 0; i < S.size(); ++i) {
+    S.at(i) = Signal1(S.at(i).begin(), S.at(i).begin() + n_mfcc);
+  }
+
+  return transpose(S);
+}
+/*
+Signal1 dct(const Signal1 &input) {
+  size_t N = input.size();
+  Signal1 output(N);
+
+  auto dct_matrix = _dct_coef(N);
+
+  for (size_t k = 0; k < N; ++k) {
+    double sum = 0.0;
+    double norm_factor = (std::sqrt(1.0 / N));
+    for (size_t n = 1; n < N; ++n) {
+      sum += input[n] * dct_matrix.at(k).at(n);
+    }
+    output[k] = sum * norm_factor;
+  }
+
+  return output;
+}
+*/
 
 } // namespace muslib::transform
