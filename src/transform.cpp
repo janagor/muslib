@@ -24,19 +24,6 @@ Signal2 _spectogram(const Signal1 &y, int n_fft = 2048, int hop_length = 512) {
   return res2;
 }
 
-Signal1 _linspace(double min, double max, unsigned n) {
-  Signal1 res(n);
-  if (n == 1) {
-    res.at(0) = min;
-    return res;
-  }
-  auto diff = (max - min) / (n - 1);
-  std::iota(res.begin(), res.end(), 0);
-  std::for_each(res.begin(), res.end(),
-                [&](double &value) { value = min + value * diff; });
-  return res;
-}
-
 Signal1 _maximum(double lhs, const Signal1 &rhs) {
   auto res(rhs);
   std::for_each(res.begin(), res.end(),
@@ -53,12 +40,34 @@ Signal1 _minimum(const Signal1 &lhs, const Signal1 &rhs) {
   return res;
 }
 
-Signal1 hann_window(int size) {
-  Signal1 window(size);
-  for (int i = 0; i < size; ++i) {
-    window.at(i) = 0.5 * (1 - cos(2 * std::numbers::pi * i / (size - 1)));
-  }
-  return window;
+namespace {
+
+Signal1 general_cosine(unsigned M, const Signal1 &a, bool sym = true) {
+  if (!sym)
+    ++M;
+  sym = !sym;
+  auto fac = _linspace(-M_PI, M_PI, M);
+  Signal1 w(M, 0);
+  for (size_t i = 0; i < w.size(); ++i)
+    for (size_t k = 0; k < a.size(); ++k)
+      w.at(i) += a.at(k) * std::cos(k * fac.at(i));
+  if (sym)
+    w.pop_back();
+  return w;
+}
+
+} // namespace
+
+Signal1 hann_window(int size, bool fftbins) {
+  // Signal1 window(size);
+  // auto nsize = fftbins ? size - 1 : size;
+  //
+  // for (int i = 0; i < size; ++i)
+  //   window.at(i) = 0.5 * (1 - cos(2 * M_PI * i / (nsize)));
+  //
+  // return window;
+
+  return general_cosine(size, Signal1{0.5, 0.5}, fftbins);
 }
 
 Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length) {
@@ -72,38 +81,32 @@ Signal2Complex stft(const Signal1 &signal, int n_fft, int hop_length,
   int num_frames = static_cast<int>((signal.size() - n_fft) / hop_length + 1);
   Signal2Complex result(num_frames, Signal1Complex(n_fft / 2 + 1));
 
-  // Allocate memory for a single FFTW complex buffer
   fftw_complex *fft_buffer = new fftw_complex[n_fft];
 
-  // Plan the FFT using fftw_plan_dft_1d
   fftw_plan plan = fftw_plan_dft_1d(n_fft, fft_buffer, fft_buffer, FFTW_FORWARD,
                                     FFTW_ESTIMATE);
 
   for (int frame = 0; frame < num_frames; ++frame) {
     int start_idx = frame * hop_length;
 
-    // Window the signal and copy into the fft_buffer (real part only)
     for (int i = 0; i < n_fft; ++i) {
       if (static_cast<size_t>(start_idx + i) < signal.size()) {
-        fft_buffer[i][0] = signal[start_idx + i] * window[i]; // Real part
-        fft_buffer[i][1] = 0.0; // Imaginary part is zero for the real signal
+        fft_buffer[i][0] = signal[start_idx + i] * window[i];
+        fft_buffer[i][1] = 0.0;
       } else {
-        fft_buffer[i][0] = 0.0; // Zero padding
+        fft_buffer[i][0] = 0.0;
         fft_buffer[i][1] = 0.0;
       }
     }
 
-    // Perform the FFT (in-place)
     fftw_execute(plan);
 
-    // Store the FFT result (only the positive frequencies)
     for (int i = 0; i < n_fft / 2 + 1; ++i) {
       result[frame][i] =
           std::complex<double>(fft_buffer[i][0], fft_buffer[i][1]);
     }
   }
 
-  // Clean up FFTW plan and allocated memory
   fftw_destroy_plan(plan);
   delete[] fft_buffer;
 
@@ -341,4 +344,22 @@ Signal1 dct(const Signal1 &input) {
 }
 */
 
+Signal2 autocorrelate(const Signal2 &signal) {
+  Signal2 res(signal.size(), Signal1(signal.at(0).size(), 0));
+  for (size_t i = 0; i < res.size(); ++i)
+    res.at(i) = autocorrelate(signal.at(i));
+  return res;
+}
+Signal1 autocorrelate(const Signal1 &signal) {
+  int n = signal.size();
+
+  auto n_pad = next_fast_len(2 * n + 1);
+  // n_pad = 0;
+
+  auto powerspec = fft::rfft(signal, n_pad);
+  auto res = _abs2(powerspec);
+  res = fft::irfft(res, n_pad);
+
+  return Signal1(res.begin(), res.begin() + n - 1);
+}
 } // namespace muslib::transform

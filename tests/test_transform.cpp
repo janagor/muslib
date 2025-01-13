@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "common.hpp"
 #include "transform.hpp"
 using namespace muslib;
 using namespace muslib::transform;

@@ -10,11 +10,19 @@ import numpy as np
 #         fmin=110, fmax=110*64, duration=1, sr=22050))
 #
 
+
 def test_tone():
     assert np.all(muslib.mixer.tone(440, duration=1, sr=22050)
                   == librosa.tone(440, duration=1, sr=22050))
     assert np.all(muslib.mixer.tone(440, sr=22050, length=22050)
                   == librosa.tone(440, sr=22050, length=22050))
+
+
+def test_frame():
+    y, _ = librosa.load(librosa.ex('trumpet'))
+    frames_librosa = librosa.util.frame(y, frame_length=2048, hop_length=64)
+    frames_muslib = muslib.mixer.frame(y, 2048, 64)
+    assert np.allclose(frames_librosa, frames_muslib)
 
 
 def test_zero_crossings():

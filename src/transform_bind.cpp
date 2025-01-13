@@ -111,18 +111,15 @@ PYBIND11_MODULE(transform, m) {
       [](double sr, int n_fft, int n_mels) -> py::array_t<double> {
         muslib::Signal2 res = muslib::transform::mel(sr, n_fft, n_mels);
 
-        // Oblicz wymiary tablicy
         size_t rows = res.size();
         size_t cols = res.empty() ? 0 : res[0].size();
 
-        // Skopiuj dane do płaskiego wektora
         std::vector<double> flat_data;
         flat_data.reserve(rows * cols);
         for (const auto &row : res) {
           flat_data.insert(flat_data.end(), row.begin(), row.end());
         }
 
-        // Utwórz NumPy array
         py::array_t<double> result({rows, cols}, flat_data.data());
 
         return result;
@@ -137,6 +134,7 @@ PYBIND11_MODULE(transform, m) {
         return result;
       },
       "fft_frequencies", py::arg("sr") = 22050, py::arg("n_fft") = 2048);
+
   m.def(
       "mfcc",
       [](const py::array_t<double> &input, double sr) -> py::array_t<double> {
@@ -161,4 +159,22 @@ PYBIND11_MODULE(transform, m) {
         return result;
       },
       "mfcc", py::arg("signal"), py::arg("sr") = 22050);
+
+  m.def(
+      "autocorrelate",
+      [](py::array_t<double> sig) {
+        py::buffer_info buf = sig.request();
+        muslib::Signal1 vec(static_cast<double *>(buf.ptr),
+                            static_cast<double *>(buf.ptr) + buf.size);
+        auto output_vec = muslib::transform::autocorrelate(vec);
+
+        py::array_t<double> result(output_vec.size());
+        auto result_buf = result.request();
+        double *result_ptr = static_cast<double *>(result_buf.ptr);
+
+        std::copy(output_vec.begin(), output_vec.end(), result_ptr);
+
+        return result;
+      },
+      "autocorrelate", py::arg("signal"));
 }

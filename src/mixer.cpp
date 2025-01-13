@@ -53,19 +53,7 @@ std::vector<bool> zero_crossings(const Signal1 &sig, bool pad) {
   return res;
 }
 
-namespace {
-void _pad_edge(Signal1 &sig, unsigned begin_size, unsigned end_size) {
-
-  Signal1 padding_lhs(begin_size, sig.at(0));
-  std::cout << "sig.at(0)" << sig.at(0) << std::endl;
-  Signal1 padding_rhs(end_size, sig.at(sig.size() - 1));
-  std::cout << "sig.at(sig.size() - 1)" << sig.at(sig.size() - 1) << std::endl;
-
-  sig.insert(sig.begin(), padding_lhs.begin(), padding_lhs.end());
-  sig.insert(sig.end(), padding_rhs.begin(), padding_rhs.end());
-}
-
-} // namespace
+namespace {} // namespace
 
 Signal1 zero_crossing_rate(const Signal1 &sig, unsigned frame_length,
                            unsigned hop_length) {
