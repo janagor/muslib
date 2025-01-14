@@ -10,7 +10,6 @@ namespace muslib::convert {
  * @return Frequency in mels.
  */
 double hz_to_mel(double freqs);
-// <<<<<<< HEAD
 
 /**
  * @brief Converts frequencies in hertzs to mels.
@@ -68,14 +67,6 @@ std::vector<double> amplitude_to_db(const std::vector<double> &signal);
  * @param n_fft
  * @return
  */
-// =======
-// Signal1 hz_to_mel(const Signal1 &freqs);
-// double mel_to_hz(double mel);
-// Signal1 mel_to_hz(const Signal1 &mels);
-// Signal1 db_to_power(const Signal1 &signal);
-// Signal1 power_to_db(const Signal1 &signal);
-// Signal1 amplitude_to_db(const Signal1 &signal);
-// >>>>>>> f952791 (added tempgram, ffts and others)
 std::vector<int> samples_to_frames(const std::vector<int> &samples,
                                    int hop_length = 512, int n_fft = 0);
 
@@ -89,6 +80,8 @@ std::vector<int> samples_to_frames(const std::vector<int> &samples,
  */
 std::vector<int> frames_to_samples(const std::vector<int> &frames,
                                    int hop_length = 512, int n_fft = 0);
-
+std::vector<int> time_to_samples(const Signal1 &times, double sr = 22050);
+std::vector<int> time_to_frames(const Signal1 &times, double sr = 22050,
+                                unsigned hop_length = 512);
 } // namespace muslib::convert
 // signal A reference to the signal.

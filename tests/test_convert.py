@@ -69,3 +69,29 @@ def test_frames_to_samples():
 
     assert np.all(muslib.convert.frames_to_samples(beats)
                   == librosa.frames_to_samples(beats))
+
+
+def test_time_to_frames():
+    assert np.all(muslib.convert.time_to_frames(in1)
+                  == librosa.time_to_frames(in1))
+    assert np.all(muslib.convert.time_to_frames(in2)
+                  == librosa.time_to_frames(in2))
+    assert np.all(muslib.convert.time_to_frames(in3)
+                  == librosa.time_to_frames(in3))
+    assert np.all(muslib.convert.time_to_frames(in4)
+                  == librosa.time_to_frames(in4))
+    assert np.all(muslib.convert.time_to_frames(in5)
+                  == librosa.time_to_frames(in5))
+
+
+def test_time_to_samples():
+    assert np.all(muslib.convert.time_to_samples(in1)
+                  == librosa.time_to_samples(in1))
+    assert np.all(muslib.convert.time_to_samples(in2)
+                  == librosa.time_to_samples(in2))
+    assert np.all(muslib.convert.time_to_samples(in3)
+                  == librosa.time_to_samples(in3))
+    assert np.all(muslib.convert.time_to_samples(in4)
+                  == librosa.time_to_samples(in4))
+    assert np.all(muslib.convert.time_to_samples(in5)
+                  == librosa.time_to_samples(in5))

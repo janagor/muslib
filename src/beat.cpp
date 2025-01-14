@@ -86,8 +86,16 @@ Signal2 tempogram(const Signal1 &signal, int sr,
   return _norm_max(temp);
 }
 
+Signal1 tempo([[maybe_unused]] const Signal1 &y, [[maybe_unused]] double sr) {
+  auto onset_envelope = onset_strength(y, sr);
+
+  return {};
+}
+
 Signal1 beat_track([[maybe_unused]] const Signal1 &y,
                    [[maybe_unused]] double sr) {
+  auto onset_envelope = onset_strength(y, sr);
+
   return {};
 }
 

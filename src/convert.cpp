@@ -114,4 +114,18 @@ std::vector<int> frames_to_samples(const std::vector<int> &frames,
                 [&](int &sample) { sample = (sample * hop_length) + offset; });
   return samples;
 }
+
+std::vector<int> time_to_samples(const Signal1 &times, double sr) {
+  std::vector<int> result(times.size());
+  std::transform(times.begin(), times.end(), result.begin(),
+                 [&sr](double x) { return static_cast<int>(x * sr); });
+  return result;
+}
+
+std::vector<int> time_to_frames(const Signal1 &times, double sr,
+                                unsigned hop_length) {
+  auto samples = time_to_samples(times, sr);
+  return samples_to_frames(samples, hop_length);
+}
+
 } // namespace muslib::convert
