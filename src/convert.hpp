@@ -36,7 +36,7 @@ double mel_to_hz(double mel);
 std::vector<double> mel_to_hz(const std::vector<double> &mels);
 
 /**
- * @brief Convert dB value to a power value.
+ * @brief Converts dB value to a power value.
  * 
  * @param signal A reference to the signal.
  * @return Power values.
@@ -44,7 +44,7 @@ std::vector<double> mel_to_hz(const std::vector<double> &mels);
 std::vector<double> db_to_power(const std::vector<double> &signal);
 
 /**
- * @brief Convert power value to a dB value.
+ * @brief Converts power value to a dB value.
  * 
  * @param signal A reference to the signal.
  * @return dB values.
@@ -52,24 +52,26 @@ std::vector<double> db_to_power(const std::vector<double> &signal);
 std::vector<double> power_to_db(const std::vector<double> &signal);
 
 /**
- * @brief 
+ * @brief Converts Amplitude to dB.
  * 
- * @param 
- * @return 
+ * @param signal A reference to the signal.
+ * @return dB values.
  */
 std::vector<double> amplitude_to_db(const std::vector<double> &signal);
 
 /**
- * @brief 
+ * @brief Converts samples to frames.
  * 
- * @param 
+ * @param samples
+ * @param hop_length
+ * @param n_fft 
  * @return 
  */
 std::vector<int> samples_to_frames(const std::vector<int> &samples,
                                    int hop_length = 512, int n_fft = 0);
  
  /** 
-  * @brief Converts samples to frames. 
+  * @brief Converts frames to samples. 
   * 
   * @param frames
   * @param hop_length 
