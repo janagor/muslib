@@ -44,9 +44,7 @@ PYBIND11_MODULE(transform, m) {
         auto r = coefs.unchecked<2>();
 
         int num_frames = r.shape(0);
-        // std::cout << "num_frames: " << num_frames << std::endl;
         int num_bins = r.shape(1);
-        // std::cout << "num_bins: " << num_bins << std::endl;
 
         std::vector<std::vector<std::complex<double>>> coefs_vec(
             num_bins, muslib::Signal1Complex(num_frames));
@@ -105,6 +103,19 @@ PYBIND11_MODULE(transform, m) {
       },
       "mel frequencies", py::arg("n_mels") = 128, py::arg("fmin") = 0.0,
       py::arg("fmax") = 11025.0);
+
+  m.def(
+      "tempo_frequencies",
+      [](unsigned n_bins, double sr,
+         unsigned hop_length) -> py::array_t<double> {
+        muslib::Signal1 res =
+            muslib::transform::tempo_frequencies(n_bins, sr, hop_length);
+        py::array_t<double> result(res.size(), res.data());
+
+        return result;
+      },
+      "tempo_frequencies", py::arg("n_bins"), py::arg("sr") = 22050.0,
+      py::arg("hop_length") = 512);
 
   m.def(
       "mel",

@@ -189,6 +189,15 @@ Signal1 mel_frequencies(unsigned n_mels, double fmin, double fmax) {
   return convert::mel_to_hz(mels);
 }
 
+Signal1 tempo_frequencies(unsigned n_bins, double sr, unsigned hop_length) {
+  Signal1 bin_frequencies(n_bins, 0);
+  bin_frequencies.at(0) = std::numeric_limits<double>::infinity();
+  std::iota(bin_frequencies.begin() + 1, bin_frequencies.end(), 1);
+  std::for_each(bin_frequencies.begin() + 1, bin_frequencies.end(),
+                [&](double &x) { x = 60 * sr / (hop_length * x); });
+  return bin_frequencies;
+}
+
 Signal2 mel(double sr, int n_fft, int n_mels) {
   auto fmax = sr / 2;
   Signal2 weights(n_mels, Signal1((1 + n_fft / 2), 0));

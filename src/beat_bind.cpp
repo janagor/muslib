@@ -53,4 +53,14 @@ PYBIND11_MODULE(beat, m) {
       },
       "Tempogram", py::arg("input"), py::arg("sr") = 22050,
       py::arg("hop_length") = 512);
+
+  m.def(
+      "tempo",
+      [](const py::array_t<double> &input, double sr) -> double {
+        py::buffer_info buf = input.request();
+        std::vector<double> vec(static_cast<double *>(buf.ptr),
+                                static_cast<double *>(buf.ptr) + buf.size);
+        return muslib::beat::tempo(vec, sr);
+      },
+      "tempo", py::arg("input"), py::arg("sr"));
 }

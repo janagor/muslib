@@ -112,6 +112,8 @@ Signal1 mel_frequencies(unsigned n_mels = 128, double fmin = 0.0,
  * @return Mel transform matrix
  */
 Signal2 mel(double sr, int n_fft, int n_mels = 128);
+Signal1 tempo_frequencies(unsigned n_bins, double sr = 22050,
+                          unsigned hop_length = 512);
 
 /**
  * @brief Compute a mel-scaled spectrogram.

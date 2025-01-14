@@ -50,27 +50,8 @@ Signal1 _sync(const Signal2 &S) {
 
 } // namespace
 
-double estimate_tempo(const Signal1 &signal) {
-  const double SAMPLING_RATE = 44100; // TODO: make it an argument
-
-  int N = signal.size();
-  std::vector<double> autocorrelation(N);
-  for (int tau = 0; tau < N; ++tau)
-    for (int t = 0; t < N - tau; ++t)
-      autocorrelation.at(tau) += signal.at(t) * signal.at(t + tau);
-
-  int max_index =
-      std::max_element(autocorrelation.begin() + 10, autocorrelation.end()) -
-      autocorrelation.begin();
-
-  double tempo = 60.0 * SAMPLING_RATE / max_index;
-
-  return tempo;
-}
-
 Signal2 tempogram(const Signal1 &signal, int sr,
-                  [[maybe_unused]] int hop_length) {
-  int win_length = 384;
+                  [[maybe_unused]] int hop_length, int win_length) {
   auto window = transform::hann_window(win_length, true);
   auto onset_envelop = onset_strength(signal, sr);
   auto pad = win_length / 2;
@@ -86,10 +67,49 @@ Signal2 tempogram(const Signal1 &signal, int sr,
   return _norm_max(temp);
 }
 
-Signal1 tempo([[maybe_unused]] const Signal1 &y, [[maybe_unused]] double sr) {
-  auto onset_envelope = onset_strength(y, sr);
+double tempo(const Signal1 &y, double sr) {
+  auto ac_size = 8.0;
+  auto hop_length = 512;
+  auto start_bpm = 120.0;
+  auto std_bpm = 1.0;
+  auto max_tempo = 320.0;
 
-  return {};
+  auto onset_envelope = onset_strength(y, sr);
+  auto win_length = convert::time_to_frames({ac_size}, sr).at(0);
+  auto tg = tempogram(y, sr, 512, win_length);
+  Signal1 tg_avgs(tg.at(0).size(), 0);
+  for (size_t i = 0; i < tg.at(0).size(); ++i) {
+    for (size_t j = 0; j < tg.size(); ++j)
+      tg_avgs.at(i) += tg.at(j).at(i);
+    tg_avgs.at(i) /= tg.size();
+  }
+  auto bpms = transform::tempo_frequencies(win_length, sr, hop_length);
+
+  auto logprior(bpms);
+  std::for_each(logprior.begin(), logprior.end(), [&](double &bpm) {
+    bpm = -0.5 * ((std::log2(bpm) - log2(start_bpm)) / std_bpm) *
+          ((std::log2(bpm) - log2(start_bpm)) / std_bpm);
+  });
+
+  auto it = std::find_if(bpms.begin(), bpms.end(),
+                         [max_tempo](int bpm) { return bpm < max_tempo; });
+  size_t x = std::distance(bpms.begin(), it);
+  if (x == bpms.size())
+    x = 0;
+  std::for_each(logprior.begin(), logprior.begin() + x, [&](double &bpm) {
+    bpm = -std::numeric_limits<double>::infinity();
+  });
+
+  auto max_indx =
+      tg_avgs.size() < logprior.size() ? tg_avgs.size() : logprior.size();
+
+  Signal1 periods(max_indx, 0);
+  std::transform(tg_avgs.begin(), tg_avgs.begin() + max_indx, logprior.begin(),
+                 periods.begin(),
+                 [&](auto tg, auto logp) { return log1p(1e6 * tg) + logp; });
+  auto max_it = std::max_element(periods.begin(), periods.end());
+  auto best_period = std::distance(periods.begin(), max_it);
+  return bpms.at(best_period);
 }
 
 Signal1 beat_track([[maybe_unused]] const Signal1 &y,

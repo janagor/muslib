@@ -38,6 +38,7 @@ PYBIND11_MODULE(io, m) {
         return muslib::io::get_samplerate(filename);
       },
       "get samplerate");
+
   m.def(
       "get_duration",
       [](const char *filename) -> double {

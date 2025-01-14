@@ -141,8 +141,6 @@ PYBIND11_MODULE(convert, m) {
       "time_to_samples",
       [](py::array_t<double> times, double sr) {
         py::buffer_info buf = times.request();
-        for (const auto &r : buf.shape)
-          std::cout << r << std::endl;
         muslib::Signal1 vec(static_cast<double *>(buf.ptr),
                             static_cast<double *>(buf.ptr) + buf.size);
         std::vector<int> output_vec = muslib::convert::time_to_samples(vec, sr);
