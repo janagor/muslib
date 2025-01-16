@@ -3,11 +3,24 @@ import librosa
 import muslib
 import librosa.display
 import matplotlib.pyplot as plt
+import time
 
 y, sr = librosa.load(librosa.ex('trumpet'))
 
-S1 = librosa.feature.melspectrogram(y=y, sr=sr)
+
+t1 = time.time()
+
 S2 = muslib.transform.melspectrogram(y, sr=sr)
+
+t2 = time.time()
+
+S1 = librosa.feature.melspectrogram(y=y, sr=sr)
+
+t3 = time.time()
+
+print("my: ", t2-t1)
+print("their: ", t3-t2)
+
 
 fig, ax = plt.subplots(nrows=2, sharex=True, sharey=True)
 
