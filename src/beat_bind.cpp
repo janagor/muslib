@@ -28,6 +28,24 @@ PYBIND11_MODULE(beat, m) {
       "onset_strength", py::arg("signal"), py::arg("sr") = 22050);
 
   m.def(
+      "beat_track",
+      [](py::array_t<double> sig, double sr) {
+        py::buffer_info buf = sig.request();
+        muslib::Signal1 vec(static_cast<double *>(buf.ptr),
+                            static_cast<double *>(buf.ptr) + buf.size);
+        auto output_vec = muslib::beat::beat_track(vec, sr);
+
+        py::array_t<double> result(output_vec.size());
+        auto result_buf = result.request();
+        double *result_ptr = static_cast<double *>(result_buf.ptr);
+
+        std::copy(output_vec.begin(), output_vec.end(), result_ptr);
+
+        return result;
+      },
+      "beat_track", py::arg("signal"), py::arg("sr") = 22050);
+
+  m.def(
       "tempogram",
       [](const py::array_t<double> &input, double sr,
          double hop_length) -> py::array_t<double> {

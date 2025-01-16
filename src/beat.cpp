@@ -112,11 +112,171 @@ double tempo(const Signal1 &y, double sr) {
   return bpms.at(best_period);
 }
 
-Signal1 beat_track([[maybe_unused]] const Signal1 &y,
-                   [[maybe_unused]] double sr) {
-  auto onset_envelope = onset_strength(y, sr);
+namespace {
 
-  return {};
+Signal1 _beat_local_score(const Signal1 &onset_envelope,
+                          unsigned frames_per_beat) {
+  auto N = onset_envelope.size();
+  Signal1 localscore(N, 0);
+  size_t K = 2 * frames_per_beat + 1;
+  Signal1 window(K, 0);
+  std::iota(window.begin(), window.end(),
+            -static_cast<double>(frames_per_beat));
+  std::for_each(window.begin(), window.end(), [frames_per_beat](double &x) {
+    x = std::exp(-0.5 *
+                 std::pow(x * 32.0 / static_cast<double>(frames_per_beat), 2));
+  });
+
+  for (size_t i = 0; i < onset_envelope.size(); ++i) {
+
+    int start_k = std::max(0, static_cast<int>(i) + static_cast<int>(K) / 2 -
+                                  static_cast<int>(N) + 1);
+    int end_k = std::min(static_cast<int>(i) + K / 2, K);
+
+    for (int k = start_k; k < end_k; ++k)
+      localscore.at(i) += window.at(k) * onset_envelope.at(i + K / 2 - k);
+  }
+  return localscore;
+}
+
+void _beat_track_dp(const Signal1 &localscore, double frames_per_beat,
+                    double tightness, std::vector<int> &backlink,
+                    Signal1 &cumscore) {
+  auto score_thresh =
+      0.01 * (*std::max_element(localscore.begin(), localscore.end()));
+  auto first_beat = true;
+  backlink.at(0) = -1;
+  cumscore.at(0) = localscore.at(0);
+
+  for (int i = 0; i < static_cast<int>(localscore.size()); ++i) {
+    auto best_score = -std::numeric_limits<double>::infinity();
+    auto beat_location = -1;
+
+    for (int loc = i - static_cast<int>(frames_per_beat) / 2;
+         loc > i - 2 * static_cast<int>(frames_per_beat) - 1; --loc) {
+      if (loc < 0)
+        break;
+      auto score = cumscore.at(loc) -
+                   tightness * pow(log(i - loc) - log(frames_per_beat), 2);
+      if (score > best_score) {
+        best_score = score;
+        beat_location = loc;
+      }
+      if (beat_location >= 0)
+        cumscore.at(i) = localscore.at(i) + best_score;
+      else
+        cumscore.at(i) = localscore.at(i);
+      if (first_beat && localscore.at(i) < score_thresh)
+        backlink.at(i) = -1;
+      else {
+        backlink.at(i) = beat_location;
+        first_beat = false;
+      }
+    }
+  }
+  return;
+}
+
+std::vector<bool> _local_max(const std::vector<double> &data) {
+  std::vector<bool> mask(data.size(), true);
+  for (size_t i = 1; i < data.size() - 1; ++i) {
+    if (data[i] <= data[i - 1] || data[i] <= data[i + 1]) {
+      mask[i] = false;
+    }
+  }
+  mask.front() = false;
+  mask.back() = false;
+  return mask;
+}
+
+double _median_masked(const std::vector<double> &data,
+                      const std::vector<bool> &mask) {
+  std::vector<double> filtered;
+  for (size_t i = 0; i < data.size(); ++i) {
+    if (!mask[i]) {
+      filtered.push_back(data[i]);
+    }
+  }
+
+  if (filtered.empty()) {
+    return 0.0; // Jeśli wszystkie wartości są zamaskowane
+  }
+
+  std::sort(filtered.begin(), filtered.end());
+  size_t mid = filtered.size() / 2;
+  return filtered.size() % 2 == 0 ? (filtered[mid - 1] + filtered[mid]) / 2.0
+                                  : filtered[mid];
+}
+
+void _last_beat_selector(const std::vector<double> &data,
+                         const std::vector<bool> &mask, double threshold,
+                         int &lastBeatPos) {
+  lastBeatPos = -1;
+  for (int i = static_cast<int>(data.size()) - 1; i >= 0; --i) {
+    if (!mask[i] && data[i] > threshold) {
+      lastBeatPos = i;
+      break;
+    }
+  }
+}
+int _last_beat(const std::vector<double> &cumscore) {
+  std::vector<bool> mask = _local_max(cumscore);
+  double median = _median_masked(cumscore, mask);
+  double threshold = 0.5 * median;
+  int tail = -1;
+  _last_beat_selector(cumscore, mask, threshold, tail);
+  return tail;
+}
+
+void _dp_backtrack(const std::vector<int> &backlinks, int tail,
+                   std::vector<bool> &beats) {
+  while (tail >= 0) {
+    beats.at(static_cast<unsigned>(tail)) = 1;
+    tail = backlinks.at(tail);
+  }
+}
+
+std::vector<bool> _beat_tracker(const Signal1 &onset_envelope, double bpm,
+                                double frame_rate, double tightness,
+                                [[maybe_unused]] bool trim) {
+  auto frames_per_beat = frame_rate * 60.0 / bpm;
+  auto localscore = _beat_local_score(onset_envelope, frames_per_beat);
+
+  Signal1 cumscore(localscore.size(), 0);
+  std::vector<int> backlink(localscore.size(), 0);
+  _beat_track_dp(localscore, frames_per_beat, tightness, backlink, cumscore);
+  auto tail = _last_beat(cumscore);
+  std::vector<bool> beats(onset_envelope.size(), 0);
+  _dp_backtrack(backlink, tail, beats);
+  return beats;
+}
+
+std::vector<double> get_true_indices(const std::vector<bool> &vec) {
+  std::vector<double> indices;
+
+  for (size_t i = 0; i < vec.size(); ++i) {
+    if (vec[i]) {
+      indices.push_back(i);
+    }
+  }
+
+  return indices;
+}
+
+} // namespace
+
+Signal1 beat_track(const Signal1 &y, double sr) {
+  auto hop_length = 512;
+  auto tightness = 100.;
+  auto trim = true;
+
+  auto onset_envelope = onset_strength(y, sr);
+  auto bpm = tempo(y, sr);
+  auto beats =
+      _beat_tracker(onset_envelope, bpm, sr / hop_length, tightness, trim);
+  auto res = get_true_indices(beats);
+
+  return res;
 }
 
 Signal1 onset_strength(const Signal1 &y, double sr) {
