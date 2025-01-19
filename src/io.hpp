@@ -2,6 +2,13 @@
 #include "common.hpp"
 #include <sndfile.hh>
 
+/**
+ *  @brief Input Output handling.
+ *  @author Jan Górski.
+ *  @author Konrad Pióro.
+ */
+
+
 namespace muslib::io {
 /**
  * @brief Convert to mono

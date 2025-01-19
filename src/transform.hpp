@@ -1,4 +1,10 @@
 #pragma once
+
+/**
+ *  @brief Operations that can be applied to signal.
+ *  @author Jan Górski
+ */
+
 #include "common.hpp"
 #include "convert.hpp"
 #include "fft.hpp"
@@ -6,30 +12,11 @@
 
 namespace muslib::transform {
 
-/**
- * @brief
- *
- * @param vals
- * @return
- */
+
 Signal1 _diff(const Signal1 &vals);
 
-/**
- * @brief
- *
- * @param lhs
- * @param rhs
- * @return
- */
 Signal1 _maximum(double lhs, const Signal1 &rhs);
 
-/**
- * @brief
- *
- * @param lhs
- * @param rhs
- * @return
- */
 Signal1 _minimum(const Signal1 &lhs, const Signal1 &rhs);
 
 /**
@@ -74,19 +61,20 @@ Signal1 istft(const Signal2Complex &stft_matrix, int n_fft = 2048,
               int hop_length = 512);
 
 /**
- * @brief //TODO
+ * @brief Inverse short-time Fourier transform (ISTFT).
  *
- * @param
- * @param
- * @param
- * @return
+ * @param stft_frames STFT frames from stft
+ * @param fft_size Size of fft
+ * @param hop_size Number of frames between STFT columns
+ * @param windows A window specification
+ * @return Time domain signal reconstructed from stft_matrix
  */
 Signal1 istft(const Signal2Complex &stft_frames, int fft_size, int hop_size,
               const Signal1 &window);
 
 /**
  * @brief
- *
+ * //todo
  * @param
  * @return
  */
@@ -143,14 +131,27 @@ Signal1 fft_frequencies(double sr = 22050, unsigned n_fft = 2048);
 Signal2 mfcc(const Signal1 &y, double sr);
 
 /**
- * @brief
+ * @brief Discrete Cosine Transform.
  *
- * @param
- * @return
- */
+ * @param input Input signal.
+ * @return The transformed input Signal.
+ */ 
 Signal2 dct(const Signal2 &input);
 
+/**
+ * @brief Bounded-lag auto-correlation
+ *
+ * @param y Audio time series.
+ * @return truncated autocorrelation y*y
+ */
 Signal1 autocorrelate(const Signal1 &signal);
+
+/**
+ * @brief Bounded-lag auto-correlation
+ *
+ * @param y Audio time series.
+ * @return truncated autocorrelation y*y
+ */
 Signal2 autocorrelate(const Signal2 &signal);
 
 } // namespace muslib::transform

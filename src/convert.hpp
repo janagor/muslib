@@ -1,6 +1,11 @@
 #pragma once
 #include "common.hpp"
 
+/**
+ *  @brief Conversion perations.
+ *  @author Konrad Pióro.
+ */
+
 namespace muslib::convert {
 
 /**
@@ -62,10 +67,10 @@ std::vector<double> amplitude_to_db(const std::vector<double> &signal);
 /**
  * @brief Converts samples to frames.
  *
- * @param samples
- * @param hop_length
- * @param n_fft
- * @return
+ * @param samples sample index or vector of sample indices
+ * @param hop_length number of samples between successive frames
+ * @param n_fft length of the FFT window. 
+ * @return Frame numbers corresponding to the given times.
  */
 std::vector<int> samples_to_frames(const std::vector<int> &samples,
                                    int hop_length = 512, int n_fft = 0);
@@ -73,15 +78,29 @@ std::vector<int> samples_to_frames(const std::vector<int> &samples,
 /**
  * @brief Converts frames to samples.
  *
- * @param frames
- * @param hop_length
- * @param n_ftt
- * @return
+ * @param frames frame index or vector of frame indices
+ * @param hop_length number of samples between successive frames
+ * @param n_ftt length of the FFT window.
+ * @return time (in samples) of each given frame number.
  */
 std::vector<int> frames_to_samples(const std::vector<int> &frames,
                                    int hop_length = 512, int n_fft = 0);
+/**
+ * @brief Converts time to samples.
+ *
+ * @param times Time value or array of time values (in seconds)
+ * @param sr Sampling rate
+ * @return Sample indices corresponding to values in times
+ */                                   
 std::vector<int> time_to_samples(const Signal1 &times, double sr = 22050);
+/**
+ * @brief Converts
+ *
+ * @param times time (in seconds) or vector of time values
+ * @param sr Sampling rate
+ * @param hop_length number of samples between successive frames
+ * @return Frame numbers corresponding to the given times.
+ */
 std::vector<int> time_to_frames(const Signal1 &times, double sr = 22050,
                                 unsigned hop_length = 512);
 } // namespace muslib::convert
-// signal A reference to the signal.
