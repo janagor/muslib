@@ -6,15 +6,56 @@ constexpr double default_phi = -std::numbers::pi * 0.5;
 
 namespace muslib::mixer {
 // TODO: to be implemented
+/**
+ * @brief Construct a pure tone (cosine) signal at a given frequency.
+ * 
+ * @param frequency frequency.
+ * @param sr desired sampling rate of the output signal.
+ * @param length desired number of samples in the output signal.
+ * @param duration desired duration in seconds.
+ * @param phi phase offset, in radians.
+ * @return Synthesized pure sine tone signal.
+ */
 Signal1 tone(double frequency, double sr = 22050, unsigned length = 0,
              double duration = -1, double phi = default_phi);
+
+/**
+ * @brief Construct a pure tone (cosine) signal at a given frequency.
+ * 
+ * @param fmin initial frequency.
+ * @param fmax final frequency.
+ * @param sr desired sampling rate of the output signal.
+ * @param length desired number of samples in the output signal.
+ * @param duration desired duration in seconds.
+ * @param phi phase offset, in radians.
+ * @return Synthesized pure sine tone signal.
+ */
 Signal1 chirp(double fmin, double fmax, double sr = 22050, int length = 0,
               double duration = -1, double phi = default_phi);
 // Signal1 sin(double duration, unsigned sample_rate, double freq);
 // Signal1 cos(double duration, unsigned sample_rate, double freq);
+/**
+ * @brief Find the zero-crossings of an input signal.
+ * 
+ * @param sig An input signal.
+ * @param pad if true starts from sig[0]
+ * @return Indicator array of zero-crossings in input signal along the selected axis.
+ */
 std::vector<bool> zero_crossings(const Signal1 &sig, bool pad = true);
+/**
+ * @brief Compute the zero-crossing rate of an audio time series.
+ * 
+ * @param sig An input signal.
+ * @param frame_length Length of the frame over which to compute zero crossing rates
+ * @param hop_length Number of samples to advance for each frame.
+ * @return fractions of zero crossings in frame.
+ */
 Signal1 zero_crossing_rate(const Signal1 &sig, unsigned frame_length = 2048,
                            unsigned hop_length = 512);
+
+/**
+ * 
+ */
 Signal2 transpose(const Signal2 &sig);
 
 /**

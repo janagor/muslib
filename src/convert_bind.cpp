@@ -25,7 +25,7 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "Compute the Short-Time Fourier Transform (STFT)");
+      "Converts frequency in hertzs to mels.");
 
   m.def(
       "mel_to_hz",
@@ -43,7 +43,7 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "Compute the Short-Time Fourier Transform (STFT)");
+      "Converts frequency in mels to hertzs.");
 
   m.def(
       "db_to_power",
@@ -61,7 +61,8 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "Compute the Short-Time Fourier Transform (STFT)");
+      "Converts dB value to a power value.");
+
   m.def(
       "power_to_db",
       [](py::array_t<double> freqs) {
@@ -78,7 +79,8 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "Compute the Short-Time Fourier Transform (STFT)");
+      "Converts power value to a dB value.");
+      
   m.def(
       "amplitude_to_db",
       [](py::array_t<double> freqs) {
@@ -95,7 +97,7 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "Compute the Short-Time Fourier Transform (STFT)");
+      "Converts Amplitude to dB.");
 
   m.def(
       "samples_to_frames",
@@ -114,7 +116,7 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "samples to frames", py::arg("samples"), py::arg("hop_length") = 512,
+      "Converts frames to samples.", py::arg("samples"), py::arg("hop_length") = 512,
       py::arg("n_fft") = 0);
 
   m.def(
@@ -134,7 +136,7 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "frames to samples", py::arg("frames"), py::arg("hop_length") = 512,
+      "Converts frames to samples.", py::arg("frames"), py::arg("hop_length") = 512,
       py::arg("n_fft") = 0);
 
   m.def(
@@ -154,7 +156,7 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "time to samples", py::arg("times"), py::arg("sr") = 22050);
+      "Converts time to samples.", py::arg("times"), py::arg("sr") = 22050);
 
   m.def(
       "time_to_frames",
@@ -173,6 +175,6 @@ PYBIND11_MODULE(convert, m) {
 
         return result;
       },
-      "time to samples", py::arg("times"), py::arg("sr") = 22050,
+      "Converts time to frames.", py::arg("times"), py::arg("sr") = 22050,
       py::arg("hop_length") = 512);
 }

@@ -13,7 +13,15 @@
 
 
 namespace muslib::beat {
-
+/**
+ * @brief Compute the tempogram - local autocorrelation of the onset strength envelope.
+ * 
+ * @param signal An input signal.
+ * @param sr Sampling rate of input signal.
+ * @param hop_length number of audio samples between successive onset measurements.
+ * @param win_length length of the onset autocorrelation window.
+ * @return Localized autocorrelation of the onset strength envelope.
+ */
 Signal2 tempogram(const Signal1 &signal, int sr = 22050, int hop_length = 512,
                   int win_length = 384);
 
@@ -24,6 +32,14 @@ Signal2 tempogram(const Signal1 &signal, int sr = 22050, int hop_length = 512,
  * @return Estimated beat value as a Time Vector.
  */
 std::vector<Time> detect_beats(const Signal1 &signal);
+
+/**
+ * @brief Track beats.
+ * 
+ * @param y An input signal.
+ * @param sr Sampling rate of input signal.
+ * @return estimated global tempo (in beats per minute).
+ */
 Signal1 beat_track(const Signal1 &y, double sr);
 
 /**

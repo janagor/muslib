@@ -94,7 +94,7 @@ std::vector<int> frames_to_samples(const std::vector<int> &frames,
  */                                   
 std::vector<int> time_to_samples(const Signal1 &times, double sr = 22050);
 /**
- * @brief Converts
+ * @brief Converts time to frames.
  *
  * @param times time (in seconds) or vector of time values
  * @param sr Sampling rate

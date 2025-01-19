@@ -17,7 +17,7 @@ PYBIND11_MODULE(io, m) {
 
         return numpy_array;
       },
-      "Load data from a file and return as a numpy array of float64");
+      "Load signal to variable from given file");
 
   m.def(
       "to_mono",
@@ -30,19 +30,19 @@ PYBIND11_MODULE(io, m) {
 
         return numpy_array;
       },
-      "to_mono");
+      "Convert to mono");
 
   m.def(
       "get_samplerate",
       [](const char *filename) -> double {
         return muslib::io::get_samplerate(filename);
       },
-      "get samplerate");
+      "Calculates sample rate of signal.");
 
   m.def(
       "get_duration",
       [](const char *filename) -> double {
         return muslib::io::get_duration(filename);
       },
-      "get duration");
+      "Calculate duration of audio file.");
 }

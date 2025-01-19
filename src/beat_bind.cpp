@@ -25,7 +25,7 @@ PYBIND11_MODULE(beat, m) {
 
         return result;
       },
-      "onset_strength", py::arg("signal"), py::arg("sr") = 22050);
+      "Compute a spectral flux onset strength envelope.", py::arg("signal"), py::arg("sr") = 22050);
 
   m.def(
       "beat_track",
@@ -43,7 +43,7 @@ PYBIND11_MODULE(beat, m) {
 
         return result;
       },
-      "beat_track", py::arg("signal"), py::arg("sr") = 22050);
+      "Track beats.", py::arg("signal"), py::arg("sr") = 22050);
 
   m.def(
       "tempogram",
@@ -69,7 +69,7 @@ PYBIND11_MODULE(beat, m) {
 
         return result;
       },
-      "Tempogram", py::arg("input"), py::arg("sr") = 22050,
+      "Compute the tempogram - local autocorrelation of the onset strength envelope.", py::arg("input"), py::arg("sr") = 22050,
       py::arg("hop_length") = 512);
 
   m.def(
@@ -80,5 +80,5 @@ PYBIND11_MODULE(beat, m) {
                                 static_cast<double *>(buf.ptr) + buf.size);
         return muslib::beat::tempo(vec, sr);
       },
-      "tempo", py::arg("input"), py::arg("sr"));
+      "Estimate the tempo.", py::arg("input"), py::arg("sr"));
 }
