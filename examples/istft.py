@@ -4,7 +4,6 @@ import librosa.display
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Load the example audio
 filename = librosa.example('trumpet')
 audio, sr = librosa.load(filename, sr=None)
 
@@ -60,4 +59,3 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
-
