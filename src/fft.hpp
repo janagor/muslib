@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ *  @brief Fourier tranformats.
+ *  @author Jan Górski
+ *  @author Konrad Pióro
+ */
+
 #include "common.hpp"
 #include <fftw3.h>
 

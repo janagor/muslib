@@ -1,3 +1,10 @@
+#pragma once
+
+/**
+ *  @brief Generating signals.
+ *  @author Jan Górski
+ */
+
 #include "common.hpp"
 
 namespace {
@@ -5,7 +12,7 @@ constexpr double default_phi = -std::numbers::pi * 0.5;
 }
 
 namespace muslib::mixer {
-// TODO: to be implemented
+
 /**
  * @brief Construct a pure tone (cosine) signal at a given frequency.
  * 
@@ -32,8 +39,7 @@ Signal1 tone(double frequency, double sr = 22050, unsigned length = 0,
  */
 Signal1 chirp(double fmin, double fmax, double sr = 22050, int length = 0,
               double duration = -1, double phi = default_phi);
-// Signal1 sin(double duration, unsigned sample_rate, double freq);
-// Signal1 cos(double duration, unsigned sample_rate, double freq);
+
 /**
  * @brief Find the zero-crossings of an input signal.
  * 
@@ -54,7 +60,10 @@ Signal1 zero_crossing_rate(const Signal1 &sig, unsigned frame_length = 2048,
                            unsigned hop_length = 512);
 
 /**
+ * @brief Transposes an array.
  * 
+ * @param sig input signal.
+ * @return transposed signal.
  */
 Signal2 transpose(const Signal2 &sig);
 

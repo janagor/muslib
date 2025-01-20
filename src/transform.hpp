@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- *  @brief Operations that can be applied to signal.
+ *  @brief Operations that can be applied to a signal.
  *  @author Jan Górski
  */
 
@@ -73,10 +73,10 @@ Signal1 istft(const Signal2Complex &stft_frames, int fft_size, int hop_size,
               const Signal1 &window);
 
 /**
- * @brief
- * //todo
- * @param
- * @return
+ * @brief Compute magnitude spectrum.
+ * 
+ * @param stft_result result from sft.
+ * @return magnitude spectrum.
  */
 Signal2 compute_magnitude_spectrum(const Signal2Complex &stft_result);
 
