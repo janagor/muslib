@@ -235,6 +235,56 @@ void _dp_backtrack(const std::vector<int> &backlinks, int tail,
     tail = backlinks.at(tail);
   }
 }
+std::vector<bool> _trim_beats(const Signal1 &localscore,
+                              const std::vector<bool> &beats, int trim) {
+
+  auto beats_trimmed(beats);
+
+  std::vector<double> w = {0.0, 0.5 * (1 - cos(2 * M_PI / 4 * 1)), 1.0,
+                           0.5 * (1 - cos(2 * M_PI / 4 * 3)), 0.0};
+
+  // Perform same-mode convolution for the smooth beat envelope
+  std::vector<double> smooth_boe(localscore.size(), 0.0);
+  int half_window = w.size() / 2;
+  for (size_t i = 0; i < localscore.size(); ++i) {
+    double sum = 0.0;
+    for (size_t j = 0; j < w.size(); ++j) {
+      int idx = i + j - half_window;
+      if (idx >= 0 && idx < static_cast<int>(localscore.size())) {
+        sum += localscore[idx] * w[j];
+      }
+    }
+    smooth_boe[i] = sum;
+  }
+
+  // Compute threshold: 1/2 RMS of the smoothed beat envelope
+  double threshold = 0.0;
+  if (trim) {
+    double rms = 0.0;
+    for (double val : smooth_boe) {
+      rms += val * val;
+    }
+    rms = std::sqrt(rms / smooth_boe.size());
+    threshold = 0.5 * rms;
+  }
+
+  // Suppress bad beats at the beginning
+  size_t n = 0;
+  while (n < localscore.size() && localscore[n] <= threshold) {
+    beats_trimmed[n] = false;
+    ++n;
+  }
+
+  // Suppress bad beats at the end
+  n = localscore.size() - 1;
+  while (n < localscore.size() && localscore[n] <= threshold) {
+    beats_trimmed[n] = false;
+    if (n == 0)
+      break; // Prevent underflow
+    --n;
+  }
+  return beats_trimmed;
+}
 
 std::vector<bool> _beat_tracker(const Signal1 &onset_envelope, double bpm,
                                 double frame_rate, double tightness,
@@ -248,7 +298,7 @@ std::vector<bool> _beat_tracker(const Signal1 &onset_envelope, double bpm,
   auto tail = _last_beat(cumscore);
   std::vector<bool> beats(onset_envelope.size(), 0);
   _dp_backtrack(backlink, tail, beats);
-  return beats;
+  return _trim_beats(localscore, beats, trim);
 }
 
 std::vector<double> get_true_indices(const std::vector<bool> &vec) {
