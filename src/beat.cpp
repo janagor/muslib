@@ -199,7 +199,7 @@ double _median_masked(const std::vector<double> &data,
   }
 
   if (filtered.empty()) {
-    return 0.0; // Jeśli wszystkie wartości są zamaskowane
+    return 0.0;
   }
 
   std::sort(filtered.begin(), filtered.end());
@@ -243,7 +243,6 @@ std::vector<bool> _trim_beats(const Signal1 &localscore,
   std::vector<double> w = {0.0, 0.5 * (1 - cos(2 * M_PI / 4 * 1)), 1.0,
                            0.5 * (1 - cos(2 * M_PI / 4 * 3)), 0.0};
 
-  // Perform same-mode convolution for the smooth beat envelope
   std::vector<double> smooth_boe(localscore.size(), 0.0);
   int half_window = w.size() / 2;
   for (size_t i = 0; i < localscore.size(); ++i) {
@@ -257,7 +256,6 @@ std::vector<bool> _trim_beats(const Signal1 &localscore,
     smooth_boe[i] = sum;
   }
 
-  // Compute threshold: 1/2 RMS of the smoothed beat envelope
   double threshold = 0.0;
   if (trim) {
     double rms = 0.0;
@@ -268,19 +266,17 @@ std::vector<bool> _trim_beats(const Signal1 &localscore,
     threshold = 0.5 * rms;
   }
 
-  // Suppress bad beats at the beginning
   size_t n = 0;
   while (n < localscore.size() && localscore[n] <= threshold) {
     beats_trimmed[n] = false;
     ++n;
   }
 
-  // Suppress bad beats at the end
   n = localscore.size() - 1;
   while (n < localscore.size() && localscore[n] <= threshold) {
     beats_trimmed[n] = false;
     if (n == 0)
-      break; // Prevent underflow
+      break;
     --n;
   }
   return beats_trimmed;
